@@ -1,0 +1,166 @@
+/* ── Top menu (index.html) ─────────────────────────────────────────────────
+   Modelled on openai.com: a slim bar (64 px) in the page colour, logo left, links centred,
+   one dark pill CTA right. Hovering a top link fades the others out (in the megamenu, the
+   hovered item itself fades). Hovering Platform opens a
+   full-width megamenu in the same colour: the bar's background unrolls downwards, the items
+   (aligned under Platform) fade in, and the page behind blurs. Fixed px sizes, like the original. */
+.nav {
+  --nav-h: 64px;
+  --nav-bg: var(--page-bg, #d9d9d9);
+  --nav-ink: var(--ink-1, #12120f);
+  --nav-muted: #6b6b66;
+  position: fixed; inset: 0 0 auto 0; z-index: 50;
+  background: var(--nav-bg);
+  font-family: var(--font); font-weight: 500; color: var(--nav-ink);
+}
+.nav-bar {
+  height: var(--nav-h); padding: 0 24px;
+  max-width: calc(1400px + 48px); margin: 0 auto; box-sizing: border-box; /* content: 1400 px max */
+  display: grid; grid-template-columns: 1fr auto 1fr; align-items: center;
+}
+.nav-logo { justify-self: start; display: block; line-height: 0; }
+.nav-logo img { display: block; width: 120px; height: auto; } /* was 162 px at 1440 */
+.nav-menu { display: contents; }
+.nav-links { display: flex; align-items: center; gap: 4px; }
+.nav-link {
+  display: inline-flex; align-items: center; gap: 6px; height: 36px; padding: 0 12px;
+  font: inherit; font-size: 14px; letter-spacing: -0.01em; color: inherit; text-decoration: none;
+  background: none; border: 0; cursor: pointer; transition: opacity .2s ease;
+}
+/* Hover focus: the hovered link stays, the others fade (Platform stays while its megamenu is open) */
+@media (hover: hover) and (min-width: 861px) {
+  .nav-links:has(.nav-link:hover) .nav-link:not(:hover),
+  .nav.is-mega .nav-link:not(.nav-trigger):not(:hover) { opacity: .35; }
+  a.nav-mega-link:hover { opacity: .35; } /* in the megamenu it's the reverse: the hovered item fades */
+}
+.nav-cta {
+  justify-self: end; display: inline-flex; align-items: center; height: 36px; padding: 0 16px;
+  font-size: 14px; letter-spacing: -0.01em; color: var(--nav-bg); background: var(--nav-ink);
+  border-radius: 999px; text-decoration: none; transition: opacity .15s;
+}
+/* Hover: the same as the hero's Book a Demo (styles.css .btn): it sinks a little, the shadow comes closer */
+.nav-cta { transition: transform .45s cubic-bezier(.25, .8, .25, 1), box-shadow .45s cubic-bezier(.25, .8, .25, 1); }
+.nav-cta:hover, .nav-cta:focus-visible { transform: scale(0.965); }
+.nav-cta:active { transform: scale(0.94); transition-duration: .15s; }
+.nav-cta.is-glass:hover, .nav-cta.is-glass:focus-visible { box-shadow: var(--glass-drop-hover); }
+@media (prefers-reduced-motion: reduce) { .nav-cta { transition: none; } }
+/* As glass (GlassLayer, every page): the dark fill gives way to the glass, so the label turns dark */
+.nav-cta { position: relative; }
+.nav-cta.is-glass { color: #000; }
+.nav a:focus-visible, .nav button:focus-visible { outline: 2px solid var(--nav-ink); outline-offset: 2px; }
+
+/* Megamenu: under the bar, full width, items aligned with the Platform trigger (--mega-x, set by nav.js) */
+.nav-mega {
+  position: absolute; left: 0; right: 0; top: var(--nav-h);
+  display: flex; gap: 72px; padding: 28px 24px 44px calc(var(--mega-x, 24px));
+  background: var(--nav-bg);
+  /* the background unrolls from under the bar… */
+  clip-path: inset(0 0 100% 0); visibility: hidden;
+  transition: clip-path .4s cubic-bezier(.2, .8, .2, 1), visibility 0s linear .4s;
+}
+.nav.is-mega .nav-mega { clip-path: inset(0); visibility: visible; transition: clip-path .4s cubic-bezier(.2, .8, .2, 1), visibility 0s; }
+/* …and the items fade in just after it starts (and out at once on close) */
+.nav-mega-col { opacity: 0; transform: translateY(-6px); transition: opacity .15s ease, transform .15s ease; }
+.nav.is-mega .nav-mega-col { opacity: 1; transform: none; transition: opacity .3s ease .1s, transform .3s ease .1s; }
+.nav-mega ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; }
+.nav-mega-link {
+  display: inline-flex; align-items: center; gap: 10px; padding: 6px 0;
+  font-size: 20px; letter-spacing: -0.02em; line-height: 1.15; color: inherit; text-decoration: none;
+  transition: opacity .2s ease;
+}
+.nav-mega-link.is-soon { gap: 8px; cursor: pointer; } /* same colour as the live modules; the tag marks it */
+.nav-soon {
+  font-size: 9px; letter-spacing: .01em; line-height: 1; padding: 3px 5px; border-radius: 999px;
+  color: var(--nav-muted); background: rgb(0 0 0 / .06);
+}
+/* One continuous list of modules: the live ones, then the coming-soon ones (same spacing as any two items) */
+.nav-mega-list { display: flex; flex-direction: column; gap: 2px; }
+.nav-mega-title { margin: 0 0 12px; font-size: 12px; color: var(--nav-muted); letter-spacing: 0; }
+
+/* Preview beside the list: the hovered (or focused) module's image, crossfading between modules.
+   nav.js sets data-preview on .nav-mega and .is-on on the matching .nav-mega-img. */
+/* Side column (nav.js): the preview image with the module's description under it */
+.nav-mega-side { flex: none; align-self: flex-start; width: 360px; margin-top: 6px; /* lines up with the first item */ }
+.nav-mega-desc { margin: 14px 0 0; font: 300 17px / 1.25 var(--font-light); font-stretch: condensed; color: var(--nav-muted);
+  opacity: 0; transition: opacity .15s ease; }
+.nav.is-mega .nav-mega[data-preview] .nav-mega-desc { opacity: 1; transition: opacity .3s ease; }
+.nav-mega-preview {
+  position: relative;
+  width: 100%; aspect-ratio: 4 / 3;
+  border-radius: 16px; overflow: hidden; background: rgb(0 0 0 / .05);
+  opacity: 0; transform: translateY(-6px); transition: opacity .15s ease, transform .15s ease;
+}
+.nav.is-mega .nav-mega[data-preview] .nav-mega-preview { opacity: 1; transform: none; transition: opacity .3s ease, transform .3s ease; }
+.nav-mega-img {
+  position: absolute; inset: 0; display: flex; align-items: flex-end; padding: 16px 18px;
+  /* placeholder art: a soft glow over a two-tone gradient, faint diagonal hatching, the module name */
+  background:
+    repeating-linear-gradient(135deg, rgb(255 255 255 / .06) 0 1px, transparent 1px 14px),
+    radial-gradient(circle at 72% 28%, var(--b) 0, transparent 58%),
+    linear-gradient(160deg, var(--a), color-mix(in srgb, var(--a) 55%, #12120f));
+  color: #fff; font-size: 15px; letter-spacing: -0.01em;
+  opacity: 0; scale: 1.04; transition: opacity .35s ease, scale .6s cubic-bezier(.2, .7, .2, 1);
+}
+.nav-mega-img.is-on { opacity: 1; scale: 1; }
+.nav-mega-img::after { content: 'Placeholder'; position: absolute; top: 14px; right: 16px; font-size: 11px; opacity: .6; }
+/* The page behind an open megamenu: dimmed in the page colour and blurred */
+.nav-scrim {
+  position: fixed; inset: 0; z-index: 49; pointer-events: none;
+  background: color-mix(in srgb, var(--page-bg, #d9d9d9) 45%, transparent);
+  -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+  opacity: 0; transition: opacity .2s ease;
+}
+.nav.is-mega + .nav-scrim { opacity: 1; pointer-events: auto; }
+
+.nav-burger { display: none; }
+
+/* ── Narrow: burger + full-screen menu ── */
+@media (max-width: 860px) {
+  .nav-bar { grid-template-columns: 1fr auto; padding: 0 16px; }
+  .nav-logo img { width: 104px; }
+  .nav-burger {
+    display: grid; place-content: center; gap: 6px; width: 40px; height: 40px; margin-right: -8px;
+    background: none; border: 0; cursor: pointer; color: inherit;
+  }
+  .nav-burger span { display: block; width: 18px; height: 1.5px; background: currentColor; transition: transform .2s; }
+  .nav.is-open .nav-burger span:first-child { transform: translateY(3.75px) rotate(45deg); }
+  .nav.is-open .nav-burger span:last-child { transform: translateY(-3.75px) rotate(-45deg); }
+
+  .nav-menu {
+    display: none; position: fixed; inset: var(--nav-h) 0 0 0; overflow-y: auto;
+    flex-direction: column; justify-content: space-between; gap: 32px; padding: 16px 16px 24px;
+    background: var(--nav-bg);
+  }
+  .nav.is-open .nav-menu { display: flex; }
+  .nav-links { flex-direction: column; align-items: stretch; gap: 0; }
+  .nav-link { width: 100%; height: auto; padding: 12px 0; font-size: 26px; letter-spacing: -0.03em; border-radius: 0; justify-content: space-between; }
+  /* the megamenu opens in place, under Platform */
+  .nav-mega { position: static; display: none; flex-direction: column; gap: 20px; padding: 4px 0 16px;
+    clip-path: none; visibility: visible; transition: none; }
+  .nav-mega-col, .nav.is-mega .nav-mega-col { opacity: 1; transform: none; transition: none; }
+  .nav.is-mega .nav-mega { display: flex; }
+  .nav-mega-link { font-size: 18px; }
+  .nav-mega-preview, .nav-mega-side { display: none; } /* no hover on touch: no previews */
+  .nav-cta { justify-self: auto; justify-content: center; height: 48px; font-size: 16px; }
+  .nav-scrim { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .nav-mega, .nav.is-mega .nav-mega, .nav-mega-col, .nav.is-mega .nav-mega-col,
+  .nav-link, .nav-mega-link, .nav-scrim, .nav-burger span,
+  .nav-mega-preview, .nav.is-mega .nav-mega[data-preview] .nav-mega-preview, .nav-mega-img, .nav-mega-desc { transition: none; }
+}
+
+/* Megamenu: bigger module descriptions; the module's tag (Figma) on its preview image */
+.nav-mega-desc { font-size: 20px; line-height: 1.3; }
+.nav-mega-tag { display: block; height: 28px; width: auto; }
+/* Coming-soon modules fade on hover like the live ones, but only their name: the "Coming Soon" tag stays as it is
+   (the name fades through its colour, not the item's opacity, which would take the tag with it) */
+.nav-mega-link.is-soon { transition: color .2s ease; }
+@media (hover: hover) and (min-width: 861px) { .nav-mega-link.is-soon:hover { opacity: 1; color: color-mix(in srgb, currentColor 35%, transparent); } }
+.nav-mega-link.is-soon .nav-soon { color: var(--nav-muted); }
+/* Placeholder images: a flat colour (no gradient, no hatching) */
+.nav-mega-img { background: var(--a); }
+
+/* Book a Demo (menu bar): the same soft shadow as the glass role switch, closer on hover */
+.nav-cta.is-glass { box-shadow: 0 4px 12px rgba(0,0,0,.05); }
+.nav-cta.is-glass:hover, .nav-cta.is-glass:focus-visible { box-shadow: 0 2px 6px rgba(0,0,0,.05); }

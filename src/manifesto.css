@@ -1,0 +1,128 @@
+/* ── Manifesto page (manifesto.html) ──────────────────────────────────────
+   After wabi.ai/manifesto: one narrow text column, short paragraphs with generous space between,
+   the opening line as the heading (Denim) and the closing line set large. All text in Denim. */
+.mf { padding: calc(64px + 140px) 24px 160px; color: var(--ink-1, #12120f); }
+.mf-col { max-width: 480px; margin: 0 auto; }
+.mf-title { margin: 0 0 64px; font: 500 clamp(36px, 4.4vw, 56px) / var(--lh-display) var(--font); letter-spacing: -0.035em; }
+.mf-col p {
+  margin: 0 0 60px;
+  font: 500 clamp(22px, 2vw, 27px) / 1.25 var(--font); letter-spacing: -0.025em;
+  text-wrap: pretty;
+}
+.mf-col em { font-style: normal; } /* Denim has no italic: never let the browser fake one */
+.mf-col .mf-close { margin: 72px 0 0; font: 500 clamp(30px, 3.4vw, 42px) / var(--lh-display) var(--font); letter-spacing: -0.03em; }
+
+@media (max-width: 860px) { .mf { padding: calc(64px + 72px) 16px 112px; } .mf-title { margin-bottom: 40px; } .mf-col p { margin-bottom: 44px; } .mf-col .mf-close { margin-top: 56px; } }
+
+/* Opening and closing statements: larger, and wider than the 480 px text column,
+   overflowing it equally on both sides (capped to the viewport). */
+.mf-title, .mf-col .mf-close {
+  --wide: min(820px, calc(100vw - 48px));
+  width: var(--wide); margin-left: calc((100% - var(--wide)) / 2);
+}
+.mf-title { font-size: clamp(44px, 6.2vw, 88px); line-height: var(--lh-display); letter-spacing: -0.04em; margin-bottom: 72px; }
+.mf-col .mf-close { font-size: clamp(40px, 5.4vw, 76px); line-height: var(--lh-display); letter-spacing: -0.04em; margin-top: 88px; }
+@media (max-width: 860px) { .mf-title, .mf-col .mf-close { --wide: calc(100vw - 32px); } .mf-title { margin-bottom: 48px; } .mf-col .mf-close { margin-top: 64px; } }
+
+/* Opening claim fills the first screen, less --peek, so the top of the first paragraph shows
+   just above the fold on load (a hint to scroll);
+   opening and closing claims are both centred horizontally. */
+.mf { padding-top: 0; }
+.mf-title {
+  --peek: 64px;
+  min-height: calc(100vh - var(--peek)); min-height: calc(100svh - var(--peek)); margin-bottom: 24px;
+  display: flex; align-items: center; justify-content: center; text-align: center; text-wrap: balance;
+}
+.mf-col .mf-close { text-align: center; text-wrap: balance; }
+@media (max-width: 860px) { .mf { padding-top: 0; } .mf-title { margin-bottom: 16px; } }
+
+/* ── Transition loom after the body text (src/manifesto-loom.js) ──
+   A tall section with a sticky, full-screen canvas: its height is how much scroll the transition takes.
+   Full bleed out of the page's side padding. */
+.tl { position: relative; height: 500vh; width: 100vw; margin: 120px 0 0 calc(50% - 50vw); }
+/* The mark nearer the text: the section is pulled up under the last paragraphs (its canvas is transparent and
+   lets clicks through), so the mark, in the middle of the canvas, comes ~180px below the text */
+.tl { margin-top: calc(180px - 50vh); margin-top: calc(180px - 50svh); pointer-events: none; }
+.tl-stage { position: sticky; top: 0; height: 100vh; height: 100svh; }
+.tl-stage canvas { display: block; width: 100%; height: 100%; }
+
+/* The closing line comes after the transition: centred on its own screen, fading up as it arrives */
+.mf-end { min-height: 80vh; min-height: 80svh; display: flex; align-items: center; justify-content: center; }
+.mf-end .mf-close { --wide: min(820px, calc(100vw - 48px)); width: var(--wide); margin: 0; flex: none;
+  font: 500 clamp(40px, 5.4vw, 76px) / var(--lh-display) var(--font); letter-spacing: -0.04em; text-align: center; text-wrap: balance;
+  opacity: 0; translate: 0 24px; transition: opacity 1s cubic-bezier(.2, .7, .2, 1), translate 1s cubic-bezier(.2, .7, .2, 1); }
+.mf-end.is-in .mf-close { opacity: 1; translate: 0 0; }
+@media (prefers-reduced-motion: reduce) { .mf-end .mf-close { opacity: 1; translate: none; transition: none; } }
+@media (max-width: 860px) { .tl { margin-top: calc(120px - 50svh); } .mf-end .mf-close { --wide: calc(100vw - 32px); } }
+
+/* Dark ending: the page carries on in the dark after the transition */
+html[data-ending="dark"] .mf-end { background: #0b0c0f; color: #f4f3f0; width: 100vw; margin-left: calc(50% - 50vw); }
+html[data-ending="dark"] .mf { padding-bottom: 0; }
+
+/* Dark ending: the closing line sits in the middle of the pinned transition (letters faded in by
+   src/manifesto-loom.js) instead of on its own screen afterwards */
+.tl-line { display: none; }
+html[data-ending="dark"] .tl-line {
+  display: block; position: absolute; left: 50%; top: 50%; translate: -50% -50%; margin: 0;
+  width: min(820px, calc(100vw - 48px)); text-align: center; text-wrap: balance; pointer-events: none;
+  font: 500 clamp(40px, 5.4vw, 76px) / var(--lh-display) var(--font); letter-spacing: -0.04em; color: #f4f3f0;
+}
+.tl-w { display: inline-block; white-space: nowrap; }
+.tl-l { opacity: 0; }
+html[data-ending="dark"] .mf-end { display: none; }
+@media (max-width: 860px) { html[data-ending="dark"] .tl-line { width: calc(100vw - 32px); } }
+
+/* Dark ending: the footer carries on in the transition's dark, with light text and icons
+   (on the Loom ending the section before it is the page grey, which the footer already is) */
+html[data-ending="dark"] .site-foot { background: #0b0c0f; --foot-ink: #f4f3f0; --foot-muted: #8a8a85; }
+/* Dark ending, settled: the stage is filled dark under the canvas, so no grey hairline shows at its edges */
+html[data-ending="dark"] .tl-stage.is-dark { background: #0b0c0f; }
+/* Dark ending, past the end: the closing line stays centred in the window while the footer scrolls in */
+html[data-ending="dark"] .tl-line.is-fixed { position: fixed; z-index: 20; }
+
+/* Opening claim twice the size (was clamp(44px, 6.2vw, 88px)), with the width to hold it */
+.mf-title { --wide: min(1400px, calc(100vw - 48px)); font-size: clamp(56px, 12.4vw, 176px); letter-spacing: -0.045em; }
+@media (max-width: 860px) { .mf-title { --wide: calc(100vw - 32px); } }
+
+/* Closing line on two lines ("The whole club, connected, / working as one."): wide enough for each half */
+/* sized in em, so it scales with the type: too narrow for the whole line (~17em), wide enough for each half (~9.6em) */
+.mf-end .mf-close, html[data-ending="dark"] .tl-line { width: min(12em, calc(100vw - 48px)); }
+@media (max-width: 860px) { .mf-end .mf-close, html[data-ending="dark"] .tl-line { width: min(12em, calc(100vw - 32px)); } }
+
+/* Dark ending: through the middle of the transition the menu bar blends to the transition's black, tied to the
+   scroll (src/manifesto-loom.js sets --nd from 0 to 1): light links, an inverted logo, a light Book a Demo label */
+html.nav-dark .nav { --nav-bg: color-mix(in srgb, #0b0c0f calc(var(--nd) * 100%), var(--mf-bg)); }
+/* the text, logo and button label flip at the blend's middle, fading quickly (scroll-linked, they'd vanish half way) */
+.nav { transition: color .3s ease; }
+.nav-logo img { transition: filter .3s ease; }
+.nav-cta { transition: color .3s ease, transform .45s cubic-bezier(.25, .8, .25, 1), box-shadow .45s cubic-bezier(.25, .8, .25, 1); }
+html.nav-dark-ink .nav { --nav-ink: #f4f3f0; --nav-muted: #8a8a85; }
+html.nav-dark-ink .nav-logo img { filter: invert(1); }
+html.nav-dark-ink .nav-cta.is-glass { color: #f4f3f0; }
+@media (prefers-reduced-motion: reduce) { .nav, .nav-logo img, .nav-cta { transition: none; } }
+
+/* The manifesto in the brand's light blue: the page, the menu bar (it takes the page colour) and the footer on
+   the Loom ending; the transition's shapes and the text stay in the ink */
+:root { --mf-bg: #8fc5ff; --page-bg: var(--mf-bg); }
+html, body { background-color: var(--mf-bg); }
+
+/* Book a Demo under the closing line: a glass pill like the hero's (src/manifesto.js adds the glass) */
+.mf-cta { position: relative; display: inline-flex; align-items: center; justify-content: center; height: 48px; padding: 0 28px; border-radius: 999px;
+  background: #eaeae9; box-shadow: 0 4px 12px rgba(0,0,0,.05); font: 500 16px / 1 var(--font); letter-spacing: -0.01em; color: #000; text-decoration: none;
+  transition: transform .45s cubic-bezier(.25, .8, .25, 1), box-shadow .45s cubic-bezier(.25, .8, .25, 1); }
+.mf-cta.is-glass { box-shadow: 0 4px 12px rgba(0,0,0,.05); }
+.mf-cta:hover, .mf-cta:focus-visible { transform: scale(.965); box-shadow: 0 2px 6px rgba(0,0,0,.05); }
+.mf-cta:active { transform: scale(.94); transition-duration: .15s; }
+.mf-cta:focus-visible { outline: 2px solid #12120f; outline-offset: 3px; }
+@media (prefers-reduced-motion: reduce) { .mf-cta { transition: none; } }
+/* Loom ending: under the line on its own screen */
+.mf-end { flex-direction: column; gap: 48px; }
+/* Dark ending: centred under the line in the middle of the transition (and fixed with it at the end), light label */
+.tl-cta { display: none; }
+html[data-ending="dark"] .tl-cta { display: inline-flex; position: absolute; left: 50%; translate: -50% 0; opacity: 0; color: #f4f3f0;
+  top: calc(50% + 0.9 * clamp(40px, 5.4vw, 76px) + 48px); }
+html[data-ending="dark"] .tl-cta.is-fixed { position: fixed; z-index: 20; }
+
+/* Megamenu's blurred overlay over the dark part of the transition: it takes the menu bar's colour (blue → black,
+   following the same scroll blend) instead of the page's blue */
+html.nav-dark .nav-scrim { background: color-mix(in srgb, color-mix(in srgb, #0b0c0f calc(var(--nd) * 100%), var(--mf-bg)) 45%, transparent); }

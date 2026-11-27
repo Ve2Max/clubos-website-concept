@@ -1,0 +1,158 @@
+/* ── Clubs page (clubs.html, src/clubs.js) ──────────────────────────────────
+   Laid out like the team page (team.css: heading, hero, narrower 3-column grid, its scroll motion via
+   ui/pageMotion.js); here the hero is the map and the cards are the clubs. No outlines: cards and map
+   sit on the page like the team portraits. */
+.cl-sub { margin: 24px 0 0; max-width: 44ch; font: 300 22px / 1.25 var(--font-light); font-stretch: condensed; color: #55554f; }
+
+/* Map: fills the hero frame (16:9); Esri's World Light Gray base, greyed to the page */
+.cl .tm-hero-frame { background: #cfcfcc; }
+.cl-map { width: 100%; aspect-ratio: 16 / 9; background: #cfcfcc; }
+.cl-map .leaflet-tile-pane { filter: grayscale(1) brightness(.92) contrast(1.05); }
+.cl-map.leaflet-container { background: #cfcfcc; font-family: var(--font); }
+.cl-map .leaflet-control-attribution { background: rgb(234 234 233 / .8); color: #6b6b66; font: 500 11px / 1.6 var(--font); padding: 0 8px; border-radius: 8px 0 0 0; }
+.cl-map .leaflet-control-attribution a { color: #363633; }
+.cl-map .leaflet-bar { border: 0; box-shadow: 0 4px 12px rgba(0,0,0,.08); border-radius: 12px; overflow: hidden; }
+.cl-map .leaflet-bar a { width: 36px; height: 36px; line-height: 36px; background: #eaeae9; color: #12120f; border: 0; font: 400 20px / 36px var(--font); }
+.cl-map .leaflet-bar a + a { border-top: 1px solid #dcdcda; }
+.cl-map .leaflet-bar a:hover { background: #f4f4f3; }
+
+/* Markers: the club crest on a disc; its name on hover, or when its card is hovered */
+.cl-pin { background: none; border: 0; }
+.cl-pin-in { display: grid; place-items: center; width: 52px; height: 52px; border-radius: 50%; background: #eaeae9;
+  box-shadow: 0 6px 18px rgba(18,18,15,.22); transition: transform .25s cubic-bezier(.2,.7,.2,1), box-shadow .25s; }
+.cl-pin-in img { width: 34px; height: 34px; object-fit: contain; }
+.cl-pin-name { position: absolute; left: 50%; top: calc(100% + 8px); translate: -50% 0; padding: 6px 10px; border-radius: 999px; background: #12120f; color: #eaeae9;
+  font: 500 13px / 1 var(--font); letter-spacing: -0.01em; white-space: nowrap; opacity: 0; transition: opacity .2s; pointer-events: none; }
+.cl-pin:hover .cl-pin-in, .cl-pin.is-lit .cl-pin-in { transform: scale(1.12); box-shadow: 0 8px 22px rgba(18,18,15,.28); }
+.cl-pin:hover .cl-pin-name, .cl-pin.is-lit .cl-pin-name, .cl-pin:focus-visible .cl-pin-name { opacity: 1; }
+.cl-pin:focus-visible { outline: none; }
+
+/* Cards: the team card, plus the crest (where the team has LinkedIn), a short history and the facts */
+.cl-card { scroll-margin: 96px; }
+.cl-card .tm-ph { transition: box-shadow .25s; }
+.cl-card.is-lit .tm-ph { box-shadow: 0 0 0 2px #8fc5ff; }
+.cl-crest { flex: none; display: grid; place-items: center; width: 32px; height: 32px; padding: 0; border: 0; border-radius: 50%; background: none; cursor: pointer; transition: transform .25s cubic-bezier(.2,.7,.2,1); }
+.cl-crest:hover { transform: scale(1.12); }
+.cl-crest:focus-visible { outline: 2px solid #2e57e8; outline-offset: 2px; }
+.cl-crest img { width: 28px; height: 28px; object-fit: contain; }
+.cl-text { margin: 12px 0 0; padding: 0 8px; font: 300 17px / 1.3 var(--font-light); font-stretch: condensed; color: #363633; text-wrap: pretty; }
+.cl-facts { margin: 10px 0 0; padding: 0 8px; font: 500 14px / 1.3 var(--font); letter-spacing: -0.01em; color: #8a8a84; }
+
+/* Closing call to action */
+.cl-end { display: flex; flex-direction: column; align-items: center; gap: 32px; padding: 144px 0 120px; text-align: center; }
+.cl-end-title { margin: 0; font: 500 clamp(36px, 4.6vw, 64px) / var(--lh-display) var(--font); letter-spacing: -0.035em; text-wrap: balance; }
+.btn-pill { position: relative; display: inline-flex; align-items: center; height: 48px; padding: 0 28px; border-radius: 999px; background: #eaeae9;
+  box-shadow: 0 5px 10px rgb(0 0 0 / .1); font: 500 16px / 1 var(--font); letter-spacing: -0.01em; color: #000; text-decoration: none;
+  transition: transform .45s cubic-bezier(.25,.8,.25,1); }
+.btn-pill:hover { transform: scale(.965); }
+.btn-pill.is-glass:hover { box-shadow: var(--glass-drop-hover); }
+
+@media (max-width: 860px) { .cl-sub { font-size: 19px; } .cl-map { aspect-ratio: 4 / 5; } .cl-end { padding: 96px 0 72px; } }
+@media (prefers-reduced-motion: reduce) { .cl-crest, .cl-pin-in, .btn-pill, .cl-card .tm-ph { transition: none; } }
+
+/* Four clubs: two per row, so none sits alone (the team grid's width and gaps) */
+.cl .tm-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.cl .tm-photo { aspect-ratio: 4 / 3; }
+@media (max-width: 559px) { .cl .tm-grid { grid-template-columns: minmax(0, 1fr); } }
+
+/* Card head: large name with the crest beneath; to its right, location / founded / stadium as a
+   small table with hairline dividers; the history below */
+.cl-top { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); gap: 24px; align-items: start; margin-top: 20px; padding: 0 8px; }
+.cl-id { display: flex; flex-direction: column; align-items: flex-start; gap: 14px; }
+.cl-name { margin: 0; font: 500 clamp(26px, 2.4vw, 34px) / var(--lh-display) var(--font); letter-spacing: -0.03em; text-wrap: balance; }
+.cl-id .cl-crest { width: 40px; height: 40px; margin-left: -4px; }
+.cl-id .cl-crest img { width: 36px; height: 36px; }
+.cl-meta { margin: 0; border-top: 1px solid #c6c6c3; }
+.cl-meta div { display: flex; justify-content: space-between; gap: 12px; padding: 9px 0; border-bottom: 1px solid #c6c6c3; font: 500 14px / 1.25 var(--font); letter-spacing: -0.01em; }
+.cl-meta dt { color: #8a8a84; }
+.cl-meta dd { margin: 0; text-align: right; color: #12120f; }
+.cl-card .cl-text { margin-top: 20px; }
+@media (max-width: 760px) { .cl-top { grid-template-columns: minmax(0, 1fr); gap: 16px; } .cl-id { flex-direction: row; align-items: center; justify-content: space-between; } }
+
+/* One club per row, across both columns: photo on the left, name, details and history on the right */
+.cl .tm-grid { grid-template-columns: minmax(0, 1fr); gap: 80px; }
+.cl-card { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 0 40px; align-items: start; }
+.cl-card .tm-ph { grid-row: 1 / span 2; }
+.cl-card .cl-top { margin-top: 0; padding: 0; }
+.cl-card .cl-text { padding: 0; }
+@media (max-width: 760px) {
+  .cl .tm-grid { gap: 56px; }
+  .cl-card { grid-template-columns: minmax(0, 1fr); }
+  .cl-card .tm-ph { grid-row: auto; }
+  .cl-card .cl-top { margin-top: 20px; padding: 0 8px; }
+  .cl-card .cl-text { padding: 0 8px; }
+}
+.cl-card { grid-template-rows: auto 1fr; } /* details row as tall as it needs; the history follows straight on */
+.cl-card .cl-text { align-self: start; margin-top: 24px; }
+@media (max-width: 760px) { .cl-card { grid-template-rows: none; } }
+
+/* Card, revised: name + crest (top right) on one line, the details table beneath the name, and the
+   history at the bottom of the column, level with the bottom of the photo */
+.cl-card { grid-template-rows: none; align-items: stretch; }
+.cl-card .tm-ph { grid-row: auto; }
+.cl-info { display: flex; flex-direction: column; min-width: 0; }
+.cl-headrow { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
+.cl-headrow .cl-crest { width: 44px; height: 44px; margin: -2px -4px 0 0; }
+.cl-headrow .cl-crest img { width: 40px; height: 40px; }
+.cl-info .cl-meta { margin-top: 20px; }
+.cl-info .cl-text { margin: auto 0 0; padding: 24px 0 0; font-size: 20px; line-height: 1.3; }
+@media (max-width: 760px) {
+  .cl-info { padding: 20px 8px 0; }
+  .cl-info .cl-text { margin-top: 0; font-size: 18px; }
+}
+
+/* Each club in its own container, as the cards elsewhere on the site (the home page's role bento):
+   the light card fill, a hairline outline, the soft 5% shadow and rounded corners; the photo inset in it */
+.cl-card { padding: 16px; border-radius: 24px; background: #eaeae9; border: 1px solid #f4f4f3; box-shadow: 0 4px 12px rgba(0,0,0,.05); }
+.cl-card .tm-ph { border-radius: 14px; }
+.cl-card .cl-info { padding: 8px 8px 8px 0; } /* a little more room than the photo's inset at the top, right and bottom */
+.cl-card.is-lit { box-shadow: 0 0 0 2px #8fc5ff, 0 4px 12px rgba(0,0,0,.05); }
+.cl-card.is-lit .tm-ph { box-shadow: none; }
+@media (max-width: 760px) {
+  .cl-card { padding: 12px; border-radius: 20px; }
+  .cl-card .cl-info { padding: 20px 8px 8px; }
+}
+
+/* Larger club names; the cards closer together (80px → 32px; 56px → 20px on phones) */
+.cl-name { font-size: clamp(29px, 2.9vw, 41px); letter-spacing: -0.035em; } /* between the first size (34px) and the larger one (48px) */
+.cl .tm-grid { gap: 32px; }
+@media (max-width: 760px) { .cl .tm-grid { gap: 20px; } }
+/* The info column (name, details, history) half the width of the photo: photo 2/3, info 1/3 */
+@media (min-width: 761px) { .cl-card { grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); } }
+/* Photo closer to the card's edge (8px inset, was 16px); more room round the text (32px from the card's edge) */
+@media (min-width: 761px) {
+  .cl-card { padding: 8px; }
+  .cl-card .tm-ph { border-radius: 18px; }
+  .cl-card .cl-info { padding: 24px 24px 24px 0; }
+}
+/* Alternating: every second club has its photo on the right, the info on the left (padding mirrored) */
+@media (min-width: 761px) {
+  .cl-card:nth-child(even) { grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); }
+  .cl-card:nth-child(even) .tm-ph { grid-column: 2; grid-row: 1 / span 2; }
+  .cl-card:nth-child(even) .cl-info { grid-column: 1; grid-row: 1 / span 2; padding: 24px 0 24px 24px; }
+}
+/* More room round the closing call to action (was 144px above / 120px below; 96 / 72 on phones) */
+.cl-end { padding: 240px 0 220px; }
+@media (max-width: 860px) { .cl-end { padding: 160px 0 128px; } }
+/* Taller cards (the photo sets the height: 6:5, was 4:3) and more room round the text (48px from the card's edge) */
+@media (min-width: 761px) {
+  .cl .tm-photo { aspect-ratio: 6 / 5; }
+  .cl-card .cl-info { padding: 40px 40px 40px 8px; }
+  .cl-card:nth-child(even) .cl-info { padding: 40px 8px 40px 40px; }
+}
+/* Club photos: a gentler, smaller zoom on hover than the team portraits (1.015 over 1.1s, was 1.03 over .6s) */
+.cl .tm-ph .tm-photo { transition: transform 1.1s cubic-bezier(.25, .6, .25, 1); }
+.cl .tm-card:hover .tm-photo { transform: scale(1.015); }
+@media (prefers-reduced-motion: reduce) { .cl .tm-card:hover .tm-photo { transform: none; } }
+
+/* Closing call to action in a rounded photo block, as the home page's newsletter: the page minus 16px either side
+   (main has 24px gutters: −8px pulls it out), 32px corners, the photo drifting inside (canvas: src/clubs.js) */
+.cl-end-block { position: relative; margin: 160px -8px 0; border-radius: 32px; overflow: hidden; isolation: isolate; background: #12120f; color: #fff; }
+.cl-end-bg { position: absolute; left: 0; top: -14%; display: block; width: 100%; height: 128%; z-index: -1; will-change: transform; }
+.cl-end-block > .cl-end { padding: 300px 24px 300px; }
+.cl-end-block .cl-end-title { color: #fff; }
+.cl-end-block .btn-pill { border: 0; color: #fff; } /* white label: the glass over the dark photo reads dark */
+@media (max-width: 860px) {
+  .cl-end-block { margin: 120px 0 0; border-radius: 24px; }
+  .cl-end-block > .cl-end { padding: 180px 16px 180px; }
+}

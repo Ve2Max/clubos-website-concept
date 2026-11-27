@@ -1,0 +1,641 @@
+/* Design: Figma "look here claude" → Frame 1 (30:842), a 1600 × 901 frame.
+   --u is one Figma pixel, scaled so the frame fits the viewport. */
+
+@font-face {
+  font-family: 'Denim';
+  src: url('./assets/fonts/Denim-Medium.woff2') format('woff2'), url('./assets/fonts/Denim-Medium.woff') format('woff');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+/* Subtitle / small print: Aeonik Condensed Pro Light (the installed font if present, else the file) */
+@font-face {
+  font-family: 'Aeonik Condensed Pro';
+  src: local('Aeonik Condensed Pro Light'), local('AeonikCondensedPro-Light'),
+    url('./assets/fonts/aeonikcondensedpro-light.otf') format('opentype');
+  font-weight: 300;
+}
+/* The roles section (src/roles) asks for "Aeonik Condensed". Declared here, not in its
+   shadow root, where @font-face has no effect. */
+@font-face {
+  font-family: 'Aeonik Condensed';
+  src: url('./assets/fonts/aeonikcondensedpro-light.otf') format('opentype');
+  font-weight: 300; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: 'Aeonik Condensed';
+  src: url('./assets/fonts/aeonikcondensedpro-lightitalic.otf') format('opentype');
+  font-weight: 300; font-style: italic; font-display: swap;
+}
+
+/* ── Tokens ──────────────────────────────────────────────────────────── */
+:root {
+  --u: min(calc(100vw / 1600), calc(100vh / 901));
+  --hu: calc(100vw / 1440); /* one px of the 1440-wide hero frame (Figma 43:1048) */
+  --lh-display: 0.9; /* line height of every large heading, site-wide (the hero title's, from Figma: 62.4 / 69.3) */
+
+  --ink-1: #12120f;      /* text, lines, connectors */
+  --tick: #363633;       /* timeline ruler */
+  --purple: #8891f3;     /* module tags */
+  --red: #fe4050;        /* medical tags */
+  --violet: #b769ff;     /* coaching tags */
+  --ruler-bg: #e9e9e9;   /* timeline bar */
+  --marker-bg: #12120f; /* timeline marker */
+  --marker-day: #b6cee6;
+  --marker-time: #ffffff;
+  --surface: #ffffff;    /* card / COS when glass is off */
+
+  --bg: #d9d9d9;         /* story background (Figma frame fill) */
+  --text: var(--ink-1);
+  --text-muted: #5f5f5a;
+
+  /* Hero → story. --page-bg / --grid-dot / --ink are scrubbed by ui/theme.js */
+  --hero-bg: #d9d9d9;    /* same as the story (Figma page fill) */
+  --hero-text: var(--ink-1);
+  --hero-text-muted: #6b6b66;
+  --hero-grid-dot: rgb(0 0 0 / 0);  /* no dots before the story; they fade in as it starts */
+  --story-grid-dot: rgb(0 0 0 / 0.1);
+  --page-bg: var(--hero-bg);
+  --ink: var(--hero-text);
+  --grid-dot: var(--hero-grid-dot);
+  --grid-size: 24px;
+
+  --glass-drop: 0 14px 36px -10px rgb(0 0 0 / 0.35); /* outer shadow of glass surfaces (panel: Shadow) */
+
+  --timeline-h: calc(282 * var(--u)); /* ruler + marker */
+  --font: 'Denim', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-light: 'Aeonik Condensed Pro', 'Arial Narrow', 'Roboto Condensed', ui-sans-serif, sans-serif;
+}
+
+/* Registered so getComputedStyle resolves them to px (NetworkChart reads them). */
+@property --safe-top { syntax: '<length>'; inherits: true; initial-value: 0px; }
+@property --safe-right { syntax: '<length>'; inherits: true; initial-value: 0px; }
+@property --safe-bottom { syntax: '<length>'; inherits: true; initial-value: 0px; }
+@property --safe-left { syntax: '<length>'; inherits: true; initial-value: 0px; }
+
+* { box-sizing: border-box; }
+html { scroll-behavior: auto; }
+body {
+  margin: 0;
+  background-color: var(--page-bg);
+  background-image: radial-gradient(circle at center, var(--grid-dot) 1px, transparent 1.4px);
+  background-size: var(--grid-size) var(--grid-size);
+  background-attachment: fixed;
+  color: var(--text);
+  font-family: var(--font);
+  font-weight: 500;
+  line-height: 1.3;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Timeline (Figma: "timeline grid" + "timeline marker") ───────────── */
+.timeline {
+  position: fixed;
+  inset: 0 0 auto 0;
+  z-index: 10;
+  height: var(--timeline-h);
+  pointer-events: none;
+  /* hidden over the hero; theme.js adds .is-visible once the story starts */
+  opacity: 0;
+  transform: translateY(-40%);
+  transition: opacity .5s, transform .5s cubic-bezier(.2, .8, .2, 1);
+}
+.timeline.is-visible { opacity: 1; transform: none; }
+/* Ruler (Figma "timeline grid" 32:1497): bar 992 × 10, radius 14, #e9e9e9, centred,
+   bar centre at y 257 (Figma 107 + 150); 29 ticks 4 tall across 872 (60 inset each side). */
+.tl-ruler {
+  position: absolute;
+  top: calc(252 * var(--u)); /* Figma y 102, moved 150 lower */
+  left: calc(50vw - 496 * var(--u));
+  width: calc(992 * var(--u));
+  height: calc(10 * var(--u));
+  border-radius: calc(14 * var(--u));
+  background: var(--ruler-bg);
+  pointer-events: auto;
+  cursor: pointer;
+}
+/* Hidden (over the hero and the showcase): not clickable either */
+.timeline:not(.is-visible) .tl-ruler { pointer-events: none; }
+.tl-ticks {
+  position: absolute;
+  left: calc(60 * var(--u));
+  right: calc(60 * var(--u));
+  top: calc(3 * var(--u));
+  height: calc(4 * var(--u));
+}
+.tl-tick { position: absolute; top: 0; bottom: 0; width: 1px; margin-left: -0.5px; background: var(--tick); }
+.tl-marker {
+  /* 70% of the Figma marker (76 × 66, type 25.714) */
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: calc(53.2 * var(--u));
+  height: calc(46.2 * var(--u));
+  transform: translate(-50%, -50%); /* centred on its tick and on the bar */
+  z-index: 1;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: calc(4.9 * var(--u)) calc(4.9 * var(--u)) calc(4.2 * var(--u));
+  border-radius: calc(7 * var(--u));
+  background: var(--marker-bg);
+  font-size: calc(18 * var(--u));
+  letter-spacing: -0.04em;
+  line-height: normal;
+  white-space: nowrap;
+  pointer-events: none;
+  transition: left .25s cubic-bezier(.3, .7, .3, 1);
+}
+.tl-day { color: var(--marker-day); margin-bottom: calc(-4.9 * var(--u)); }
+.tl-time { color: var(--marker-time); }
+.tl-colon { animation: tl-blink 1s steps(1, end) infinite; }
+@keyframes tl-blink { 50% { opacity: 0; } }
+
+/* ── Hero: the page before the story (Figma "Desktop" 43:1048) ──────────────
+   A 1440-wide design: --hu is one Figma px of it. Elements sit at their Figma x/y. */
+.hero {
+  position: relative;
+  height: calc(1640 * var(--hu));
+  overflow: hidden;
+  color: #000;
+}
+.hero > *, .site-header > * { position: absolute; margin: 0; }
+/* Sticky header: logo + clubs stay put at the top while everything scrolls under */
+.site-header { position: fixed; inset: 0 0 auto 0; z-index: 30; pointer-events: none; }
+.site-header > * { pointer-events: auto; }
+.stripes {
+  left: 0; top: 0; width: calc(1440 * var(--hu)); height: calc(1948 * var(--hu)); pointer-events: none;
+  /* Subtle 3D tilt: top leans away, bottom towards the viewer. Uses the individual
+     `rotate` property, so it combines with the parallax `transform` set from JS. */
+  rotate: x 9deg;
+  transform-origin: 50% 40%;
+}
+/* The canvas bleeds past the stripes box (150 left/right, 300 above; the box's 1948
+   height kept) so neither the tilt (which narrows the top) nor the parallax (which
+   pushes it down) ever shows its edges: only the hero and window edges crop it. */
+.stripes > canvas {
+  position: absolute; display: block;
+  left: calc(-150 * var(--hu)); top: calc(-300 * var(--hu));
+  width: calc(1740 * var(--hu)); height: calc(1948 * var(--hu));
+}
+.hero { perspective: calc(1600 * var(--hu)); perspective-origin: 50% calc(600 * var(--hu)); }
+.site-header { height: calc(90 * var(--hu)); }
+.logo { left: calc(33 * var(--hu)); top: calc(37.35 * var(--hu)); width: calc(162 * var(--hu)); height: calc(38.65 * var(--hu)); }
+.clubs {
+  left: calc(1073 * var(--hu)); top: calc(31 * var(--hu));
+  display: flex; align-items: center; gap: calc(10.694 * var(--hu));
+  height: calc(46.065 * var(--hu));
+}
+.clubs > span:first-child {
+  width: calc(117 * var(--hu)); /* "In daily use at" box is 134.6 wide; the logos start at x 1190 */
+  font: 300 calc(17.143 * var(--hu)) / normal var(--font-light);
+  font-stretch: condensed;
+  white-space: nowrap;
+}
+.club { display: block; width: calc(46.065 * var(--hu)); height: calc(46.065 * var(--hu)); object-fit: cover; }
+.club-almere { width: calc(49.355 * var(--hu)); height: calc(49.355 * var(--hu)); }
+.club-pp { position: relative; width: calc(43.06 * var(--hu)); overflow: hidden; }
+.club-pp img { position: absolute; left: -12.64%; top: 0; width: 125.28%; height: 135.01%; max-width: none; }
+
+.hero-title {
+  left: 50%; top: calc(416 * var(--hu)); width: calc(847 * var(--hu)); translate: -50% 0; /* one line now: one line-height (62.4) lower, so it keeps its gap to the lede */
+  font-weight: 500; font-size: calc(69.332 * var(--hu)); line-height: var(--lh-display);
+  letter-spacing: -0.04em; text-align: center;
+}
+.lede {
+  left: 50%; top: calc(489 * var(--hu)); width: calc(547 * var(--hu)); translate: -50% 0;
+  font: 300 calc(20 * var(--hu)) / normal var(--font-light); font-stretch: condensed;
+  text-align: center;
+}
+.cta { left: 50%; top: calc(583 * var(--hu)); translate: -50% 0; display: flex; gap: calc(9.22 * var(--hu)); } /* one button, centred */
+.btn {
+  position: relative;
+  display: grid; place-items: center;
+  width: calc(181.89 * var(--hu)); height: calc(47.778 * var(--hu));
+  border-radius: 999px; /* pill, like the email field */
+  font-size: calc(15 * var(--hu)); color: #000; text-decoration: none; white-space: nowrap;
+}
+.btn-demo { background: #eaeae9; box-shadow: 0 5px 10px rgb(0 0 0 / 0.1); } /* neutral until the glass takes over (no blue flash on load) */
+.btn:focus-visible { outline: 2px solid var(--ink-1); outline-offset: 3px; }
+/* Hover (after wabi.ai): the button sinks a little — smaller, shadow closer — while the
+   glass light swings round it (GlassLayer). */
+.btn { transition: transform .45s cubic-bezier(.25, .8, .25, 1), box-shadow .45s cubic-bezier(.25, .8, .25, 1); }
+.btn:hover, .btn:focus-visible { transform: scale(0.965); }
+.btn:active { transform: scale(0.94); transition-duration: .15s; }
+.btn-demo:hover, .btn-demo:focus-visible { box-shadow: 0 2px 4px rgb(0 0 0 / 0.1); }
+.btn.is-glass:hover, .btn.is-glass:focus-visible { box-shadow: var(--glass-drop-hover); }
+@media (prefers-reduced-motion: reduce) { .btn { transition: none; } }
+
+/* "Join alongside clubs like": the club crests, a static row sitting at the bottom of the first screen
+   (its bottom edge 40 design px above the viewport's bottom on landing) */
+.hero-clubs { left: 50%; top: calc(min(100svh, 1640 * var(--hu)) - 40 * var(--hu)); /* (never below the hero, which clips) */ translate: -50% -100%; width: max-content; text-align: center; }
+.hero-clubs-label { margin: 0 0 calc(16 * var(--hu)); font-size: calc(11.2 * var(--hu)); letter-spacing: -0.01em; color: #6b6b66; }
+.hero-clubs-list { display: flex; justify-content: center; gap: calc(38.4 * var(--hu)); margin: 0; padding: 0; list-style: none; }
+.hero-clubs-list li { display: flex; align-items: center; gap: calc(9.6 * var(--hu)); }
+.hero-clubs-list img { width: calc(32 * var(--hu)); height: calc(32 * var(--hu)); object-fit: contain; }
+.hero-clubs-list span { font-size: calc(13.6 * var(--hu)); font-weight: 500; letter-spacing: -0.02em; color: #12120f; white-space: nowrap; }
+
+
+/* ── Showcase: glass panels sliding over a fixed player card (Figma 49:4132, src/ui/showcase.js) ──
+   A panel is 1110 × 917 in the design (shown narrower here: 980); --su is one design px,
+   scaled so a panel fits both the width (of a 1440 page) and the height (917 + room above
+   and below), then shown at 90%. */
+.showcase {
+  --su: calc(0.9 * min(calc(100vw / 1440), calc(100vh / 1140))); /* height: room for the fixed header */
+  position: relative;
+  /* Above the story: its chart scrolls in slower than the page (main.js enter()), so its
+     SVG rises over this section and would take the pointer (no grab cursor, no drag). */
+  z-index: 2;
+  height: max(100vh, calc(var(--sc-ph, 917px) + 223 * var(--su))); /* --sc-ph: panel height, set by showcase.js */
+}
+.sc-stage {
+  position: absolute; inset: 0;
+  /* clip sideways only: the curved row's outer panels dip below the section */
+  overflow-x: clip; overflow-y: visible;
+  cursor: grab;
+  touch-action: pan-y;
+  user-select: none; -webkit-user-select: none;
+  outline: none;
+  /* side panels fade out towards the edges */
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent);
+}
+.sc-stage.is-dragging { cursor: grabbing; }
+.sc-stage:focus-visible .sc-panel.is-current { outline: 2px solid var(--ink-1); outline-offset: 6px; }
+
+/* Player card (Figma "player block" 49:4123, 330 × 461.57): drawn into a canvas by showcase.js
+   so the glass can refract it. It doesn't move; showcase.js puts it in the centred panel's slot. */
+.sc-card { position: absolute; display: block; pointer-events: none; }
+
+/* Panel ("this should be glass"): solid fallback = Figma fill; GlassLayer replaces it */
+.sc-panel {
+  position: absolute; left: 50%; top: 50%;
+  width: calc(980 * var(--su)); height: calc(917 * var(--su)); /* centred by showcase.js */
+  padding-top: calc(121 * var(--su));
+  border-radius: calc(45 * var(--su));
+  background: rgb(217 217 217 / 0.2);
+  -webkit-backdrop-filter: blur(24px); backdrop-filter: blur(24px);
+  will-change: transform;
+}
+.sc-panel.is-glass { -webkit-backdrop-filter: none; backdrop-filter: none; }
+.sc-content { opacity: var(--dim, 1); }
+.sc-panel ul { list-style: none; margin: 0; padding: 0; }
+
+.sc-head {
+  width: calc(793 * var(--su)); margin: 0 auto;
+  font-weight: 500; font-size: calc(40 * var(--su)); line-height: calc(45 * var(--su));
+  letter-spacing: calc(-1.2 * var(--su)); text-align: center; color: #000;
+  text-wrap: balance;
+}
+.sc-dim { color: #a8a8a8; }
+
+/* Body: left column · player slot · right column. Each side block is its own floating glass
+   card (glass.add() in main.js), 24 px from the player card; a column spans the card's height. */
+.sc-body {
+  display: grid;
+  grid-template-columns: calc(247 * var(--su)) calc(24 * var(--su)) calc(330 * var(--su)) calc(24 * var(--su)) calc(246 * var(--su));
+  align-items: start;
+  width: max-content;
+  margin: calc(104 * var(--su)) auto 0;
+}
+.sc-col-left { grid-column: 1; }
+.sc-slot { grid-column: 3; width: calc(330 * var(--su)); height: calc(461.569 * var(--su)); }
+.sc-col-right { grid-column: 5; }
+.sc-col {
+  display: flex; flex-direction: column; justify-content: space-between;
+  height: calc(461.569 * var(--su));
+}
+/* The side blocks fade in as a panel arrives over the card and out as it leaves (--cols: showcase.js) */
+.sc-col { opacity: var(--cols, 1); }
+/* Glass card. Solid fallback when WebGL is off; GlassLayer replaces the background. */
+.sc-feature {
+  position: relative;
+  display: flex; flex-direction: column; gap: calc(8 * var(--su)); color: #000;
+  padding: calc(24 * var(--su));
+  border-radius: calc(20 * var(--su));
+  background: rgb(255 255 255 / 0.45);
+  box-shadow: 0 calc(10 * var(--su)) calc(30 * var(--su)) rgb(0 0 0 / 0.06);
+  -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px);
+}
+.sc-feature.is-glass { -webkit-backdrop-filter: none; backdrop-filter: none; }
+/* Slide in radially from the player card as the column fades in (--dx/--dy: offset to the
+   card's centre, set by showcase.js; --cols: 0 → 1 as the panel arrives). --sc-from is how far
+   in toward the centre a block starts; it also grows from 90 %. */
+.sc-feature {
+  --sc-from: 0.55;
+  --k: calc((1 - var(--cols, 1)) * var(--sc-from));
+  translate: calc(var(--k) * var(--dx, 0px)) calc(var(--k) * var(--dy, 0px));
+  scale: calc(1 - (1 - var(--cols, 1)) * 0.1);
+}
+@media (prefers-reduced-motion: reduce) { .sc-feature { translate: none; scale: none; } }
+/* Centred, like Figma Frame 38 (52:2) */
+.sc-feature { align-items: center; justify-content: center; text-align: center; }
+.sc-feature h4 {
+  margin: 0; width: 100%;
+  font-weight: 500; font-size: calc(20 * var(--su)); line-height: calc(20 * var(--su)); /* same size as the description */
+  letter-spacing: calc(-0.6 * var(--su));
+}
+.sc-feature p {
+  margin: 0; width: 100%; min-height: calc(40 * var(--su));
+  font: 300 calc(20 * var(--su)) / calc(20 * var(--su)) var(--font-light); font-stretch: condensed;
+  letter-spacing: calc(-0.2 * var(--su));
+}
+
+/* Prev / next: either side of the centred panel (solid, so they read over the side panels) */
+.sc-arrow {
+  position: absolute; top: 50%; z-index: 3;
+  width: 48px; height: 48px; margin-top: -24px;
+  display: grid; place-items: center;
+  border: 0; border-radius: 50%;
+  background: rgb(255 255 255 / 0.72);
+  -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
+  box-shadow: 0 6px 18px -6px rgb(0 0 0 / 0.25);
+  color: var(--ink-1);
+  cursor: pointer;
+  transition: transform .3s cubic-bezier(.25, .8, .25, 1), background-color .3s;
+}
+.sc-prev { left: calc(50% - 490 * var(--su) - 72px); }
+.sc-next { right: calc(50% - 490 * var(--su) - 72px); }
+.sc-next svg { transform: scaleX(-1); }
+.sc-arrow:hover { background: #fff; transform: scale(1.06); }
+.sc-arrow:active { transform: scale(0.94); }
+.sc-arrow:focus-visible { outline: 2px solid var(--ink-1); outline-offset: 3px; }
+@media (prefers-reduced-motion: reduce) { .sc-arrow { transition: none; } }
+
+.sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+
+/* ── Outro ───────────────────────────────────────────────────────────── */
+.outro h2 { color: var(--ink); font-weight: 500; font-size: clamp(36px, 6vw, 88px); margin: 0; letter-spacing: -0.03em; line-height: var(--lh-display); max-width: 22ch; text-wrap: balance; }
+.outro {
+  /* Comes up right after the last step so COS barely hovers alone; the section is a full
+     viewport tall so COS can ride the headline up to the centre. */
+  min-height: 100vh;
+  padding: 39vh 24px 0; /* COS hovers alone for only ~60px of scroll before the headline reaches it */
+  display: grid; align-content: start; justify-content: center; justify-items: center;
+  text-align: center;
+}
+
+/* ── Scrolly: fullscreen sticky chart, cards scroll over it ──────────── */
+.scrolly {
+  position: relative;
+  display: grid;
+  grid-template: 'stack' / 1fr;
+}
+.stage {
+  grid-area: stack;
+  align-self: start;          /* required for sticky inside a grid cell */
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  height: 100svh;
+  margin: 0;
+  /* The camera fits each shot into this safe area (read by NetworkChart). Steps frame
+     the whole Figma frame (1600 × 901), so graph units = Figma px = var(--u). */
+  --safe-top: 0px;
+  --safe-right: 0px;
+  --safe-bottom: 0px;
+  --safe-left: 0px;
+}
+.stage svg { position: relative; width: 100%; height: 100%; display: block; }
+/* Glass lines (panel: Glass on → Lines): rods drawn by GlassLayer between COS and the SVG */
+.glass-lines-canvas { position: absolute; display: none; pointer-events: none; }
+.glass-lines .edge { visibility: hidden; }
+/* HTML blocks (COS) live under the SVG, so connector dots and lines sit on top of them */
+.chart-overlay { position: absolute; inset: 0; pointer-events: none; } /* not clipped: COS leaves it at the end */
+
+.steps {
+  grid-area: stack;
+  position: relative;
+  z-index: 1;
+  /* card x = 178 in the frame; the frame is centred, like the chart */
+  padding: 0 0 0 calc(50vw + (178 - 800) * var(--u));
+  pointer-events: none;       /* let clicks through to the chart between cards */
+}
+/* Steps 0.8 viewport apart: the chart is scrubbed from each card's position (config.scroll),
+   and this spacing keeps one step's lines clear of the next one's build. */
+.step {
+  min-height: 80vh; /* = config.scroll.spacing */
+  display: flex;
+  align-items: flex-start;
+}
+/* First card lands where the Figma card sits (y 241 of 901) just as the chart pins */
+.step:first-child { margin-top: var(--card-rest, calc(100vh * 241 / 901)); } /* set by main.js */
+
+/* Card (Figma "card" 30:871): 577 × 457, radius 22.583, text 40.65 / 46.295 */
+.step-card {
+  pointer-events: auto;
+  position: relative;
+  width: calc(577 * var(--u));
+  min-height: calc(457 * var(--u));
+  display: grid;
+  place-items: center;
+  padding: calc(70 * var(--u)) calc(135.5 * var(--u));
+  border-radius: calc(22.583 * var(--u));
+  background: var(--surface);
+  transition: opacity .4s;
+  opacity: var(--card-inactive, .6);
+}
+.step.is-active .step-card { opacity: 1; }
+.hl-red { color: var(--red); }
+.hl-violet { color: var(--violet); }
+/* Sub-step lines are laid out from the start (space reserved, as in Figma) and fade in */
+.card-text { display: grid; gap: 0; }
+.phase-line { opacity: 0; }
+.step-card p {
+  margin: 0;
+  color: var(--ink-1);
+  font-size: calc(40.65 * var(--u));
+  line-height: calc(46.295 * var(--u));
+  letter-spacing: -0.02em;
+  text-align: center;
+}
+/* Connector on the card's right edge (Figma 30:1375): the card's line leaves from here */
+.card-connector {
+  position: absolute;
+  top: 50%;
+  right: calc(-5 * var(--u));
+  width: calc(10 * var(--u));
+  height: calc(10 * var(--u));
+  margin-top: calc(-5 * var(--u));
+  border-radius: 50%;
+  background: radial-gradient(circle closest-side, var(--ink-1) 59%, var(--surface) 61%);
+  z-index: 1;
+}
+.step-num {
+  position: absolute;
+  top: calc(21.454 * var(--u));
+  left: calc(22.64 * var(--u));
+  font: 11px ui-monospace, monospace;
+  color: #ffd84d;
+  background: rgb(0 0 0 / 0.6);
+  padding: 2px 6px;
+  border-radius: 6px;
+  white-space: nowrap;
+}
+
+/* ── Network chart ───────────────────────────────────────────────────── */
+.edge { fill: none; stroke: var(--ink-1); stroke-width: 1; }
+.pulse path { fill: none; stroke: #ffffff; stroke-linecap: butt; }
+.pulse .pulse-head { opacity: 1; }
+.pulse-ball { pointer-events: none; }
+.tag-bg { fill: var(--surface); }
+.tone-purple .tag-bg { fill: var(--purple); }
+.tone-red .tag-bg { fill: var(--red); }
+.tone-red .connector-ring { fill: var(--red); }
+.tone-violet .tag-bg { fill: var(--violet); }
+.tone-violet .connector-ring { fill: var(--violet); }
+.tag-label { fill: var(--ink-1); font: 500 22px var(--font); }
+.connector-ring { fill: var(--surface); }
+.tone-purple .connector-ring { fill: var(--purple); }
+.connector-core { fill: var(--ink-1); }
+.block-hit { fill: transparent; }
+.node-id { display: none; fill: #b8860b; font: 12px ui-monospace, monospace; }
+
+/* COS block (Figma 30:914): 160 × 160, radius 20, logo 97.9 × 70.
+   Sized in graph units; NetworkChart positions and scales it with the camera. */
+.chart-block {
+  position: absolute;
+  top: 0; left: 0;
+  transform-origin: 0 0;
+  display: grid; place-items: center;
+  border-radius: 20px;
+  background: var(--surface);
+}
+.chart-block img { display: block; position: relative; filter: none; box-shadow: none; }
+
+/* Marks set from steps.js → mark: { id: 'alert' } */
+.node[data-mark='alert'] .tag-bg { fill: #ff6b5b; }
+
+/* ── WebGL glass (src/glass/GlassLayer.js) ───────────────────────────────
+   The shader paints a <canvas> behind the content. .is-glass is toggled per
+   group from the panel; without it the element keeps its solid design fill. */
+.has-glass { isolation: isolate; }
+.glass-canvas {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  z-index: -1;
+  border-radius: inherit;
+  pointer-events: none;
+}
+.has-glass:not(.is-glass) > .glass-canvas { display: none; }
+.is-glass { background: none !important; box-shadow: var(--glass-drop); }
+
+/* ── Mobile: cards centred over the full chart ───────────────────────── */
+@media (max-width: 860px) {
+  :root { --u: calc(100vw / 900); }
+  .stage {
+    --safe-top: calc(var(--timeline-h) + 24px);
+    --safe-left: 16px;
+    --safe-right: 16px;
+    --safe-bottom: 16px;
+  }
+  .steps { padding: 0 16px 40vh; }
+  .step { justify-content: center; }
+  .step-card { width: min(100%, 420px); min-height: 0; padding: 56px 28px 32px; opacity: 1; }
+  .step-card p { font-size: 26px; line-height: 1.15; }
+  .step-num { top: 14px; left: 14px; }
+
+  /* Showcase: panel fills the width. Player slot on top (same spot in every panel, so the
+     fixed card lines up with each one), headline under it, the two columns side by side below.
+     showcase.js gives every panel the height of the tallest. */
+  .showcase {
+    --su: calc(0.9 * min(1px, calc((100vw - 48px) / 570)));
+    height: max(100vh, calc(var(--sc-ph, 600px) + 190px)); /* + room for the arrows */
+  }
+  .sc-panel { width: calc(0.9 * (100vw - 48px)); height: auto; padding: 32px 18px; border-radius: 26px; }
+  .sc-content { display: grid; grid-template-columns: 1fr 1fr; column-gap: 18px; }
+  .sc-body { display: contents; }
+  .sc-slot { grid-row: 1; grid-column: 1 / -1; justify-self: center; }
+  .sc-head { grid-row: 2; grid-column: 1 / -1; width: auto; line-height: 1.12; margin-top: 24px; }
+  .sc-col-left, .sc-col-right { grid-row: 3; height: auto; justify-content: flex-start; gap: 12px; margin-top: 24px; }
+  .sc-feature { padding: 14px; border-radius: 16px; }
+  .sc-col-left { grid-column: 1; }
+  .sc-col-right { grid-column: 2; }
+  .sc-feature h4 { line-height: 1.1; }
+  .sc-feature p { min-height: 0; line-height: 1.15; }
+  .sc-stage { -webkit-mask-image: none; mask-image: none; }
+  /* arrows as a pair under the panel */
+  .sc-arrow { top: calc(50% + var(--sc-ph, 600px) / 2 + 14px); margin-top: 0; width: 44px; height: 44px; }
+  .sc-prev { left: calc(50% - 52px); }
+  .sc-next { right: calc(50% - 52px); }
+}
+
+/* ── Debug (?debug) ──────────────────────────────────────────────────── */
+.debug-hud {
+  position: fixed; left: 12px; bottom: 12px; z-index: 100;
+  max-width: 360px;
+  padding: 10px 12px; border-radius: 8px;
+  background: #000c; color: #ffd84d;
+  font: 12px/1.5 ui-monospace, monospace;
+}
+.debug-hud small { color: #aaa; }
+.debug-ids .node-id { display: block; }
+.debug-ghosts [data-status='off'] { opacity: .15 !important; stroke-dashoffset: 0 !important; }
+
+/* Text selection highlight, site-wide */
+::selection { background: #8FC5FF; }
+
+/* Guard: nothing may push the page sideways (full-bleed rows and off-screen copies are clipped at the
+   page edge; overflow-x: clip, unlike hidden, doesn't create a scroll container, so sticky still works) */
+html { overflow-x: clip; }
+
+/* Short, wide screens (e.g. a 14" MacBook in the browser, 1512 × ~860): the hero is laid out for a
+   1440 × 900 frame and scales with the width, so the text, button and the stripes' meeting point slid
+   down onto the club logos. Everything but the logos (pinned to the screen's bottom) lifts by however
+   much the screen is shorter than that frame's proportion. Tall screens and phones: no lift. */
+.hero { --lift: max(0px, calc(900 * var(--hu) - 100svh)); }
+.hero > .stripes, .hero > .hero-title, .hero > .lede, .hero > .cta { margin-top: calc(-1 * var(--lift)); }
+
+/* Short, wide screens (wider than 1.65 : 1, e.g. 1288 × 734): the title, lede and button get smaller
+   and sit higher, and the stripes lift with them, so their pinch clears the club logos */
+@media (min-aspect-ratio: 1.65) {
+  .hero { --lift2: calc(var(--lift) + 60 * var(--hu)); --ts: .86; }
+  .hero > .stripes, .hero > .hero-title, .hero > .lede, .hero > .cta { margin-top: calc(-1 * var(--lift2)); }
+  .hero > .hero-title, .hero > .lede, .hero > .cta { scale: var(--ts); transform-origin: 50% 0; }
+  .hero > .lede { top: calc((416 + 73 * .86) * var(--hu)); }
+  .hero > .cta { top: calc((416 + 167 * .86) * var(--hu)); }
+}
+/* The club logos sit on a soft patch of the page colour, so the stripes never run underneath them */
+.hero-clubs { isolation: isolate; }
+.hero-clubs::before {
+  content: ""; position: absolute; z-index: -1; inset: calc(-70 * var(--hu)) calc(-160 * var(--hu)) calc(-60 * var(--hu));
+  background: radial-gradient(closest-side, var(--hero-bg) 62%, rgb(217 217 217 / 0));
+  pointer-events: none;
+}
+
+/* The stripes sit 180px higher than the design frame puts them; the title, lede and button 50px higher */
+.hero > .stripes { top: -180px; }
+.hero > .hero-title, .hero > .lede, .hero > .cta { translate: -50% -50px; }
+
+/* With "The last software…" section gone, the roles section takes its place: pulled up over the hero's
+   tail so its title sits ~200px below the club crests (as the removed section's did) */
+.roles { position: relative; margin-top: calc(min(100svh, 1640 * var(--hu)) - 1680 * var(--hu) + 340px); } /* 140px lower than first set */
+@media (max-width: 860px) { .roles { margin-top: calc(min(100svh, 1640 * var(--hu)) - 1680 * var(--hu) + 200px); } }
+
+/* Club logos lower on the first screen: their bottom edge 16 design px above the window's bottom (was 40) */
+.hero-clubs { top: calc(min(100svh, 1640 * var(--hu)) - 16 * var(--hu)); }
+
+/* Club logos: hold their place as the page starts to scroll, then ease into scrolling with it. A scroll-driven
+   animation, run by the browser in step with the scroll (no main-thread lag, so no judder); where that isn't
+   supported src/hero.js does the same from script. The curve approximates 220·(1 − e^(−y/220)): over the first
+   660px of scroll the logos fall up to ~210px behind, at first almost standing still. */
+@supports (animation-timeline: scroll()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .hero-clubs { animation: clubs-hold linear both; animation-timeline: scroll(root block); animation-range: 0 660px; }
+  }
+}
+@keyframes clubs-hold {
+  from { transform: translate3d(0, 0, 0); animation-timing-function: cubic-bezier(.15, .62, .4, 1); }
+  to { transform: translate3d(0, 160px, 0); } /* ends 50px higher than before (was 210px) */
+}
+
+/* Book a Demo (hero): the same soft shadow as the glass role switch (roles.css .rs-pill: 0 4px 12px, 5%),
+   coming a little closer when pressed in on hover */
+.btn-demo, .btn-demo.is-glass { box-shadow: 0 4px 12px rgba(0,0,0,.05); }
+.btn-demo:hover, .btn-demo:focus-visible, .btn-demo.is-glass:hover, .btn-demo.is-glass:focus-visible { box-shadow: 0 2px 6px rgba(0,0,0,.05); }
+
+/* Hero Book a Demo: a fixed size, the same as the manifesto's (48px tall, 28px side padding, 16px label) instead of
+   scaling with the window; not shrunk with the title on short screens either */
+.hero .btn-demo { width: auto; height: 48px; padding: 0 28px; font-size: 16px; }
+.hero > .cta { scale: none; }

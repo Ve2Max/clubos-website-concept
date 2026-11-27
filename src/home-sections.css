@@ -1,0 +1,614 @@
+/* ── Home sections before the newsletter (src/home-sections.js) ───────────────
+   Connected departments, Meeting transcripts & calendar, Decision Rooms, FAQ.
+   Site codes: Denim headings (--lh-display), Aeonik Condensed Light body, #EAEAE9 cards on the
+   #D9D9D9 page with the soft 5% shadow, ink #12120F, greys #55554F / #8A8A84, light blue #8FC5FF only
+   for what's current or new. No icons. */
+.hs { --card: #eaeae9; --line: #f4f4f3; --sunk: #e2e2e0; --ink: #12120f; --ink2: #363633; --muted: #55554f; --faint: #8a8a84;
+  --blue: #8fc5ff; --good: #15803d; --good-bg: #d3ebdb; --warn: #a14a06; --warn-bg: #f3e3cc; --bad: #b91c1c; --bad-bg: #f3d6d6;
+  position: relative; max-width: 1280px; margin: 0 auto; padding: 176px 24px 0; box-sizing: content-box; color: var(--ink); }
+
+.hs-head { max-width: 860px; margin: 0 auto 64px; text-align: center; }
+.hs-k { margin: 0 0 20px; font: 500 16px / 1.2 var(--font); letter-spacing: -0.01em; color: var(--faint); }
+.hs-title { margin: 0; font: 500 clamp(36px, 4.6vw, 64px) / var(--lh-display) var(--font); letter-spacing: -0.035em; text-wrap: balance; }
+.hs-sub { margin: 24px auto 0; max-width: 44ch; font: 300 22px / 1.25 var(--font-light); font-stretch: condensed; color: var(--muted); text-wrap: pretty; }
+
+.card, .cn-win, .dr-win { background: var(--card); border: 1px solid var(--line); border-radius: 20px; box-shadow: 0 4px 12px rgba(0,0,0,.05); }
+.win-bar { display: flex; align-items: baseline; gap: 14px; padding: 18px 24px; border-bottom: 1px solid var(--sunk);
+  font: 500 15px / 1.2 var(--font); letter-spacing: -0.01em; }
+.win-bar span { color: var(--muted); }
+.win-bar em { margin-left: auto; font-style: normal; color: var(--faint); }
+.win-lab { margin: 0 0 12px; font: 500 13px / 1.2 var(--font); color: var(--faint); }
+.win-hint { margin: auto 0 0; padding-top: 16px; font: 300 16px / 1.2 var(--font-light); font-stretch: condensed; color: var(--faint); }
+.lab { margin: 22px 0 10px; font: 500 13px / 1.2 var(--font); color: var(--faint); }
+.chip { display: inline-flex; align-items: center; height: 24px; padding: 0 10px; border-radius: 999px; background: var(--sunk);
+  font: 500 12.5px / 1 var(--font); color: var(--ink2); white-space: nowrap; }
+.chip[data-t="b"] { background: var(--blue); color: #fff; }
+.chip[data-t="a"] { background: var(--warn-bg); color: var(--warn); }
+.chip[data-t="r"] { background: var(--bad-bg); color: var(--bad); }
+.chip[data-t="g"] { background: var(--good-bg); color: var(--good); }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.av { display: grid; place-items: center; flex: none; width: 40px; height: 40px; border-radius: 50%; background: var(--ink); color: var(--card); font: 500 13px / 1 var(--font); }
+@keyframes hs-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+/* Connected departments */
+.cn-body { display: grid; grid-template-columns: 300px minmax(0, 1fr); min-height: 560px; }
+.cn-side { display: flex; flex-direction: column; padding: 22px 16px 22px 20px; border-right: 1px solid var(--sunk); }
+.cn-list { display: flex; flex-direction: column; gap: 4px; margin: 0; padding: 0; list-style: none; }
+.cn-ev { display: flex; flex-direction: column; gap: 3px; width: 100%; padding: 12px 14px; border: 0; border-radius: 12px; background: none; text-align: left; cursor: pointer; transition: background .2s; }
+.cn-ev b { font: 500 17px / 1.15 var(--font); letter-spacing: -0.015em; color: var(--ink); }
+.cn-ev small { font: 300 15px / 1.2 var(--font-light); font-stretch: condensed; color: var(--muted); }
+.cn-ev:hover { background: var(--sunk); }
+.cn-ev[aria-selected="true"] { background: var(--ink); }
+.cn-ev[aria-selected="true"] b { color: var(--card); }
+.cn-ev[aria-selected="true"] small { color: #b9b9b4; }
+.cn-main { padding: 28px 32px 32px; }
+.cn-main.in > * { animation: hs-in .4s ease both; }
+.cn-main.in > :nth-child(2) { animation-delay: .06s; } .cn-main.in > :nth-child(4) { animation-delay: .14s; }
+.cn-who { margin: 0 0 16px; font: 300 19px / 1.2 var(--font-light); font-stretch: condensed; color: var(--muted); }
+.cn-who b { font: 500 17px / 1.2 var(--font); color: var(--ink); }
+.cn-who em { font-style: normal; color: var(--faint); margin-left: 6px; }
+.cn-src { max-width: 520px; padding: 20px 22px; border-radius: 16px; background: #f4f4f3; }
+.cn-src-h { display: flex; align-items: baseline; gap: 10px; margin-bottom: 14px; font: 500 15px / 1.2 var(--font); }
+.cn-src-h span { color: var(--muted); }
+.cn-src-h .new { margin-left: auto; font-style: normal; color: var(--blue); }
+.cn-player { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+.cn-player div { flex: 1; min-width: 0; }
+.cn-player b, .pf-h b { display: block; font: 500 17px / 1.2 var(--font); }
+.cn-player small, .pf-h small { font: 300 15px / 1.2 var(--font-light); font-stretch: condensed; color: var(--muted); }
+.cn-room { margin: 0 0 10px; font: 500 20px / 1.15 var(--font); letter-spacing: -0.02em; }
+.cn-key { margin: 0 0 12px; font: 300 18px / 1.25 var(--font-light); font-stretch: condensed; color: var(--ink2); }
+.cn-key span { margin-right: 10px; font: 500 13px / 1 var(--font); color: var(--faint); }
+.cn-checkin .ci-q { margin: 0 0 12px; font: 500 20px / 1.15 var(--font); letter-spacing: -0.02em; }
+.ci-row { display: grid; grid-template-columns: 60px minmax(0, 1fr) 120px; align-items: center; gap: 10px; margin-bottom: 10px; font: 300 16px / 1.2 var(--font-light); font-stretch: condensed; }
+.ci-row span:first-child { color: var(--faint); }
+.ci-row em { font-style: normal; color: var(--ink2); }
+.segs { display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; }
+.segs i { height: 8px; border-radius: 3px; background: var(--sunk); }
+.segs i.on { background: var(--blue); } .segs i.on.r { background: var(--bad); }
+.ci-note { margin: 14px 0 6px; font: 300 17px / 1.25 var(--font-light); font-stretch: condensed; color: var(--ink2); }
+.ci-sent { margin: 0; font: 500 13px / 1.2 var(--font); color: var(--good); }
+.cn-reach { margin: 26px 0 12px; font: 500 13px / 1.2 var(--font); color: var(--faint); }
+.cn-to { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin: 0; padding: 0; list-style: none; }
+.cn-card { padding: 18px 18px 20px; border-radius: 16px; background: #f4f4f3; }
+.cn-card-h { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 10px; margin-bottom: 10px; font: 500 15px / 1.2 var(--font); }
+.cn-card-h span { color: var(--faint); font-size: 13px; }
+.cn-card-h em { font-style: normal; }
+.cn-card-h em[data-k="adds"] { color: var(--blue); }
+.cn-card-h .chip { margin-left: auto; }
+.cn-card p { margin: 0; font: 300 17px / 1.25 var(--font-light); font-stretch: condensed; color: var(--ink2); }
+.cn-card p b { font: 500 15px / 1.2 var(--font); color: var(--ink); }
+
+/* Meeting transcripts & calendar */
+.cal-grid { display: grid; grid-template-columns: 340px minmax(0, 1fr) 300px; gap: 16px; align-items: start; }
+.cal-grid .card { padding: 22px 22px 24px; }
+.recap-h { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; }
+.recap-h b { font: 500 17px / 1.2 var(--font); letter-spacing: -0.015em; }
+.recap-h .rec { padding: 3px 8px; border-radius: 999px; background: var(--bad-bg); color: var(--bad); font: 500 12px / 1 var(--font); }
+.recap-h small { width: 100%; font: 300 15px / 1.2 var(--font-light); font-stretch: condensed; color: var(--muted); }
+.tx, .steps, .notes { display: flex; flex-direction: column; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.tx li { display: grid; grid-template-columns: 62px 40px minmax(0, 1fr); gap: 6px; font: 300 16px / 1.25 var(--font-light); font-stretch: condensed; color: var(--ink2); }
+.tx b { font: 500 13px / 1.5 var(--font); color: var(--ink); }
+.tx time { font: 500 12px / 1.6 var(--font); color: var(--faint); }
+.tx mark { background: none; color: var(--blue); }
+.steps li { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 10px 12px; border-radius: 12px; background: #f4f4f3; }
+.steps b { display: block; font: 500 14.5px / 1.2 var(--font); }
+.steps small { font: 300 14px / 1.2 var(--font-light); font-stretch: condensed; color: var(--muted); }
+.week-h { display: flex; align-items: baseline; gap: 10px; margin-bottom: 16px; }
+.week-h b { font: 500 17px / 1.2 var(--font); }
+.week-h small { font: 300 15px / 1 var(--font-light); font-stretch: condensed; color: var(--muted); }
+.week-h em { margin-left: auto; font: 500 12.5px / 1 var(--font); font-style: normal; color: var(--faint); }
+.week-days, .week-body { display: grid; grid-template-columns: 44px repeat(7, minmax(0, 1fr)); gap: 0 4px; }
+.week-days span { grid-column: auto; display: flex; flex-direction: column; align-items: center; padding-bottom: 8px; font: 300 15px / 1.1 var(--font-light); font-stretch: condensed; color: var(--muted); }
+.week-days span:first-child { grid-column: 2; }
+.week-days b { font: 500 13px / 1.2 var(--font); color: var(--ink); }
+.week-body { grid-template-rows: repeat(var(--rows), 26px); border-top: 1px solid var(--sunk); padding-top: 6px; }
+.hr { grid-column: 1; grid-row: var(--r); font: 500 11px / 1 var(--font); color: var(--faint); }
+.ev { grid-column: var(--c); grid-row: var(--r0) / var(--r1); display: flex; flex-direction: column; gap: 1px; min-width: 0; overflow: hidden;
+  padding: 6px 7px; border-radius: 8px; background: #f4f4f3; }
+.ev b { font: 500 12px / 1.15 var(--font); color: var(--ink); }
+.ev small { font: 300 12px / 1.15 var(--font-light); font-stretch: condensed; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ev em { font: 500 10.5px / 1.2 var(--font); font-style: normal; color: #fff; opacity: .85; }
+.ev.new { background: var(--blue); }
+.ev.new b, .ev.new small { color: #fff; }
+.ev.rec { background: var(--ink); }
+.ev.rec b { color: var(--card); } .ev.rec small { color: #b9b9b4; }
+.pf-h { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+.notes li { padding: 12px 14px; border-radius: 12px; background: #f4f4f3; }
+.notes li.new { background: var(--card); box-shadow: inset 0 0 0 1.5px var(--blue); }
+.notes .chip { margin-bottom: 6px; }
+.notes p { margin: 0 0 6px; font: 300 16px / 1.25 var(--font-light); font-stretch: condensed; color: var(--ink2); }
+.notes small { font: 500 12px / 1.2 var(--font); color: var(--faint); }
+
+/* Decision Rooms */
+.dr-body { display: grid; grid-template-columns: 260px minmax(0, 1fr); min-height: 520px; }
+.dr-side { padding: 22px 16px 22px 20px; border-right: 1px solid var(--sunk); }
+.dr-list { display: flex; flex-direction: column; gap: 4px; margin: 0; padding: 0; list-style: none; }
+.dr-room { display: flex; flex-direction: column; gap: 3px; width: 100%; padding: 12px 14px; border: 0; border-radius: 12px; background: none; text-align: left; cursor: pointer; }
+.dr-room b { font: 500 17px / 1.15 var(--font); color: var(--ink); }
+.dr-room small { font: 300 15px / 1.2 var(--font-light); font-stretch: condensed; color: var(--muted); }
+.dr-room:hover { background: var(--sunk); }
+.dr-room[aria-selected="true"] { background: var(--ink); }
+.dr-room[aria-selected="true"] b { color: var(--card); } .dr-room[aria-selected="true"] small { color: #b9b9b4; }
+.dr-main { padding: 28px 32px 28px; }
+.dr-q h3 { margin: 0; font: 500 28px / 1.05 var(--font); letter-spacing: -0.03em; }
+.dr-q p { margin: 8px 0 0; font: 300 18px / 1.25 var(--font-light); font-stretch: condensed; color: var(--muted); }
+.dr-flow { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin-top: 24px; }
+.dr-col { padding: 18px; border-radius: 16px; background: #f4f4f3; }
+.dr-h { display: flex; align-items: center; gap: 8px; margin: 0 0 14px; font: 500 14px / 1.2 var(--font); }
+.dr-h i { display: grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; background: var(--ink); color: var(--card); font: 500 11px / 1 var(--font); font-style: normal; }
+.dr-ins, .dr-outs { display: flex; flex-direction: column; gap: 12px; margin: 0; padding: 0; list-style: none; }
+.dr-ins b, .dr-outs small { display: block; font: 500 12.5px / 1.2 var(--font); color: var(--faint); }
+.dr-ins span { font: 300 16px / 1.25 var(--font-light); font-stretch: condensed; color: var(--ink2); }
+.dr-opts { display: flex; flex-direction: column; gap: 8px; }
+.dr-opt { display: flex; gap: 10px; padding: 12px; border: 0; border-radius: 12px; background: var(--card); text-align: left; cursor: pointer; }
+.dr-opt .radio { flex: none; width: 16px; height: 16px; margin-top: 2px; border-radius: 50%; box-shadow: inset 0 0 0 1.5px #c6c6c3; }
+.dr-opt[aria-pressed="true"] { box-shadow: inset 0 0 0 1.5px var(--blue); }
+.dr-opt[aria-pressed="true"] .radio { box-shadow: inset 0 0 0 5px var(--blue); }
+.dr-opt b { display: block; font: 500 15px / 1.2 var(--font); color: var(--ink); }
+.dr-opt small { font: 300 15px / 1.2 var(--font-light); font-stretch: condensed; color: var(--muted); }
+.dr-when { margin: -4px 0 12px; font: 300 15px / 1.2 var(--font-light); font-stretch: condensed; color: var(--muted); }
+.dr-outs li { display: flex; gap: 10px; animation: hs-in .35s ease both; }
+.dr-outs .dot { display: grid; place-items: center; flex: none; width: 22px; height: 22px; border-radius: 50%; font: 500 12px / 1 var(--font); }
+.dr-outs [data-c="g"] .dot { background: var(--good-bg); color: var(--good); }
+.dr-outs [data-c="o"] .dot { background: var(--warn-bg); color: var(--warn); }
+.dr-outs [data-c="r"] .dot { background: var(--bad-bg); color: var(--bad); }
+.dr-outs b { font: 500 15px / 1.2 var(--font); }
+.dr-call { margin: 20px 0 0; font: 300 17px / 1.25 var(--font-light); font-stretch: condensed; color: var(--muted); }
+.dr-points { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 32px; margin: 48px 0 0; padding: 0; list-style: none; }
+.dr-points b { display: block; margin-bottom: 8px; font: 500 22px / 1.1 var(--font); letter-spacing: -0.02em; }
+.dr-points span { font: 300 18px / 1.25 var(--font-light); font-stretch: condensed; color: var(--muted); }
+
+/* FAQ */
+.faq-grid { display: grid; grid-template-columns: minmax(0, 4fr) minmax(0, 8fr); gap: 48px; align-items: start; }
+.faq-l .hs-title { text-align: left; }
+.faq-cats { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; margin: 32px 0 24px; }
+.faq-cat { padding: 10px 16px; border: 0; border-radius: 999px; background: none; cursor: pointer; font: 500 17px / 1.2 var(--font); letter-spacing: -0.015em; color: var(--muted); }
+.faq-cat:hover { color: var(--ink); }
+.faq-cat[aria-pressed="true"] { background: var(--ink); color: var(--card); }
+.faq-more { margin: 0; padding-left: 16px; font: 300 18px / 1.25 var(--font-light); font-stretch: condensed; color: var(--muted); }
+.faq-more a { color: var(--ink); }
+.faq-topic { margin: 6px 0 14px; font: 500 15px / 1.2 var(--font); color: var(--faint); }
+.faq-list { padding: 6px 0; border-radius: 20px; background: var(--card); border: 1px solid var(--line); box-shadow: 0 4px 12px rgba(0,0,0,.05); }
+.faq-item + .faq-item { border-top: 1px solid var(--sunk); }
+.faq-item h3 { margin: 0; }
+.faq-item button { display: flex; align-items: center; justify-content: space-between; gap: 16px; width: 100%; padding: 20px 26px; border: 0; background: none; text-align: left; cursor: pointer;
+  font: 500 19px / 1.2 var(--font); letter-spacing: -0.015em; color: var(--ink); }
+.faq-item button i { position: relative; flex: none; width: 14px; height: 14px; }
+.faq-item button i::before, .faq-item button i::after { content: ""; position: absolute; left: 0; top: 6px; width: 14px; height: 2px; border-radius: 1px; background: var(--muted); transition: transform .25s; }
+.faq-item button i::after { transform: rotate(90deg); }
+.faq-item button[aria-expanded="true"] i::after { transform: rotate(0); }
+.faq-a p { margin: 0; padding: 0 26px 22px; max-width: 62ch; font: 300 19px / 1.3 var(--font-light); font-stretch: condensed; color: var(--ink2); }
+
+@media (max-width: 1100px) {
+  .cal-grid { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  .cal-week { grid-column: 1 / -1; grid-row: 1; }
+}
+@media (max-width: 860px) {
+  .hs { padding: 112px 16px 0; }
+  .hs-head { margin-bottom: 40px; }
+  .hs-sub { font-size: 19px; }
+  .cn-body, .dr-body { grid-template-columns: minmax(0, 1fr); min-height: 0; }
+  .cn-side, .dr-side { border-right: 0; border-bottom: 1px solid var(--sunk); }
+  .cn-list, .dr-list { flex-direction: row; overflow-x: auto; scrollbar-width: none; }
+  .cn-ev, .dr-room { flex: none; width: auto; white-space: nowrap; }
+  .week-h em { display: none; }
+  .ev { padding: 4px 5px; } .ev b { font-size: 10.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .win-hint { display: none; }
+  .cn-main, .dr-main { padding: 20px; }
+  .cn-to, .dr-flow, .dr-points { grid-template-columns: minmax(0, 1fr); }
+  .cal-grid { grid-template-columns: minmax(0, 1fr); }
+  .week-body { grid-template-rows: repeat(var(--rows), 22px); }
+  .ev small, .ev em { display: none; }
+  .win-bar em { display: none; }
+  .faq-grid { grid-template-columns: minmax(0, 1fr); gap: 24px; }
+  .faq-cats { flex-direction: row; flex-wrap: wrap; margin: 24px 0 12px; }
+  .faq-item button { padding: 18px 20px; font-size: 17px; }
+  .faq-a p { padding: 0 20px 18px; font-size: 17px; }
+}
+@media (prefers-reduced-motion: reduce) { .cn-main.in > *, .dr-outs li { animation: none; } }
+
+/* ── Revisions ── */
+/* Calendar: the three visuals in one abstract app window, all the same height */
+.cal-win { background: var(--card); border: 1px solid var(--line); border-radius: 24px; box-shadow: 0 4px 12px rgba(0,0,0,.05); overflow: hidden; }
+.win-bar--abs { gap: 7px; padding: 16px 20px; }
+.win-bar--abs i { width: 11px; height: 11px; border-radius: 50%; background: #cfcfcc; }
+.cal-win .cal-grid { padding: 16px; align-items: stretch; }
+.cal-win .card { background: #f4f4f3; border: 0; box-shadow: none; border-radius: 16px; }
+.cal-win .steps li, .cal-win .notes li { background: var(--card); }
+.cal-win .ev { background: var(--card); }
+.cal-win .ev.new { background: var(--blue); } .cal-win .ev.rec { background: var(--ink); }
+
+/* Decision Rooms: one black rounded block; the rooms toggle on top */
+.dr-block { padding: 72px 56px 56px; border-radius: 32px; background: #12120f; color: #eaeae9; }
+.dr-block .hs-head { margin-bottom: 40px; }
+.dr-block .hs-k { color: #8a8a84; }
+.dr-block .hs-sub { color: #b9b9b4; }
+.dr-tabs { display: flex; justify-content: center; gap: 4px; width: max-content; max-width: 100%; margin: 0 auto 32px; padding: 5px;
+  border-radius: 999px; background: rgb(255 255 255 / .08); }
+.dr-block .dr-room { flex-direction: row; align-items: baseline; gap: 8px; width: auto; padding: 10px 20px; border-radius: 999px; }
+.dr-block .dr-room b { color: #eaeae9; font-size: 16px; }
+.dr-block .dr-room small { color: #8a8a84; }
+.dr-block .dr-room:hover { background: rgb(255 255 255 / .08); }
+.dr-block .dr-room[aria-selected="true"] { background: #eaeae9; }
+.dr-block .dr-room[aria-selected="true"] b { color: #12120f; } .dr-block .dr-room[aria-selected="true"] small { color: var(--muted); }
+.dr-block .dr-main { padding: 0; }
+.dr-block .dr-q { text-align: center; }
+.dr-block .dr-q p { color: #b9b9b4; }
+.dr-block .dr-col { background: rgb(255 255 255 / .06); }
+.dr-block .dr-h { color: #eaeae9; }
+.dr-block .dr-h i { background: #eaeae9; color: #12120f; }
+.dr-block .dr-ins b, .dr-block .dr-outs small, .dr-block .dr-when { color: #8a8a84; }
+.dr-block .dr-ins span { color: #d9d9d6; }
+.dr-block .dr-opt { background: rgb(255 255 255 / .06); }
+.dr-block .dr-opt b, .dr-block .dr-outs b { color: #eaeae9; }
+.dr-block .dr-opt small { color: #b9b9b4; }
+.dr-block .dr-opt .radio { box-shadow: inset 0 0 0 1.5px #55554f; }
+.dr-block .dr-opt[aria-pressed="true"] { box-shadow: inset 0 0 0 1.5px #8fc5ff; }
+.dr-block .dr-opt[aria-pressed="true"] .radio { box-shadow: inset 0 0 0 5px #8fc5ff; }
+@media (max-width: 860px) {
+  .dr-block { padding: 48px 16px 16px; border-radius: 24px; }
+  .dr-tabs { width: auto; overflow-x: auto; scrollbar-width: none; justify-content: flex-start; }
+  .dr-block .dr-room { flex: none; white-space: nowrap; padding: 10px 16px; }
+  .dr-block .dr-room small { display: none; } /* both rooms fit side by side */
+  .dr-tabs { margin-inline: auto; }
+  .cal-win .cal-grid { padding: 10px; }
+}
+
+/* Connected departments: one app window; the week's updates as a row of toggles along the top */
+.cn-win { overflow: hidden; border-radius: 24px; }
+.cn-tabs { display: flex; gap: 4px; margin: 16px 16px 0; padding: 5px; border-radius: 16px; background: #f4f4f3; overflow-x: auto; scrollbar-width: none; }
+.cn-tabs::-webkit-scrollbar { display: none; }
+.cn-tabs .cn-ev { flex: 1 1 0; min-width: 150px; width: auto; padding: 10px 14px; border-radius: 12px; }
+.cn-tabs .cn-ev:not([aria-selected="true"]):hover { background: var(--card); }
+.cn-tabs .cn-ev[aria-selected="true"] { background: var(--ink); }
+.cn-win > .cn-main { padding: 28px 32px 32px; min-height: 440px; box-sizing: border-box; }
+@media (max-width: 860px) {
+  .cn-tabs { margin: 10px 10px 0; }
+  .cn-tabs .cn-ev { flex: none; min-width: 0; white-space: nowrap; }
+  .cn-win > .cn-main { padding: 20px; min-height: 0; }
+}
+
+/* Connected departments: the update toggles sit above the window, on the page */
+.cn-tabs { margin: 0 0 16px; background: var(--card); box-shadow: 0 4px 12px rgba(0,0,0,.05); border-radius: 18px; }
+.cn-tabs .cn-ev:not([aria-selected="true"]):hover { background: #f4f4f3; }
+@media (max-width: 860px) { .cn-tabs { margin: 0 0 12px; } }
+
+/* Decision Rooms: the rooms toggle names the room only, with more room above it */
+.dr-block .hs-head { margin-bottom: 64px; }
+@media (max-width: 860px) { .dr-block .hs-head { margin-bottom: 40px; } }
+
+/* Decision Rooms: more padding round the block; facts as short points; bigger type throughout */
+.dr-block { padding: 112px 88px 88px; }
+.dr-block .dr-q h3 { font-size: 34px; }
+.dr-block .dr-flow { margin-top: 32px; gap: 16px; }
+.dr-block .dr-col { padding: 24px; }
+.dr-block .dr-h { font-size: 16px; margin-bottom: 18px; }
+.dr-block .dr-ins { gap: 16px; }
+.dr-block .dr-ins b, .dr-block .dr-outs small, .dr-block .dr-when { font-size: 14px; }
+.dr-ins ul { margin: 4px 0 0; padding: 0; list-style: none; }
+.dr-ins ul li { position: relative; padding-left: 16px; font: 300 19px / 1.3 var(--font-light); font-stretch: condensed; }
+.dr-ins ul li::before { content: ""; position: absolute; left: 2px; top: .6em; width: 5px; height: 5px; border-radius: 50%; background: currentColor; opacity: .55; }
+.dr-block .dr-ins ul li { color: #d9d9d6; }
+.dr-block .dr-opt { padding: 14px 16px; }
+.dr-block .dr-opt b, .dr-block .dr-outs b { font-size: 18px; }
+.dr-block .dr-opt small { font-size: 17px; }
+.dr-block .dr-opt .radio { width: 18px; height: 18px; }
+.dr-block .dr-outs .dot { width: 26px; height: 26px; font-size: 13px; }
+@media (max-width: 1100px) { .dr-block { padding: 88px 40px 40px; } }
+@media (max-width: 860px) { .dr-block { padding: 56px 16px 16px; } .dr-block .dr-q h3 { font-size: 26px; } .dr-block .dr-col { padding: 18px; } }
+
+/* The Decision Rooms supertitle in the light blue */
+.dr-block .hs-k { color: #8fc5ff; }
+
+/* Decision Rooms: the block reaches past the page's content width, so what's inside lines up with the
+   page (1280px) while the black runs on either side; never less than 88px of side padding */
+.hs[data-hs="rooms"] { max-width: none; padding-left: 16px; padding-right: 16px; }
+.dr-block { padding: 112px max(88px, calc((100% - 1280px) / 2)) 88px; }
+@media (max-width: 1100px) { .dr-block { padding: 88px 40px 40px; } }
+@media (max-width: 860px) { .dr-block { padding: 56px 16px 16px; } }
+/* More room between the subheader and the toggle */
+.dr-block .hs-head { margin-bottom: 96px; }
+@media (max-width: 860px) { .dr-block .hs-head { margin-bottom: 56px; } }
+/* Toggle: the light pill slides to the picked room */
+.dr-tabs { position: relative; }
+.dr-thumb { position: absolute; left: 0; top: 5px; bottom: 5px; border-radius: 999px; background: #eaeae9; }
+.dr-tabs.is-ready .dr-thumb { transition: transform .45s cubic-bezier(.3, 1.3, .5, 1), width .45s cubic-bezier(.3, 1.3, .5, 1); }
+.dr-block .dr-room { position: relative; z-index: 1; transition: color .3s; }
+.dr-block .dr-room[aria-selected="true"] { background: none; }
+.dr-block .dr-room b { transition: color .3s; }
+@media (prefers-reduced-motion: reduce) { .dr-tabs.is-ready .dr-thumb { transition: none; } }
+
+/* Light blue (#8FC5FF): dark text on it; where blue marked text on a light card, it's now a highlight */
+.chip[data-t="b"] { color: var(--ink); }
+.ev.new b, .ev.new small, .ev.new em, .cal-win .ev.new b, .cal-win .ev.new small { color: var(--ink); }
+.cn-src-h .new { padding: 3px 8px; border-radius: 999px; background: var(--blue); color: var(--ink); font-size: 12.5px; }
+.cn-card-h em[data-k="adds"] { padding: 1px 6px; border-radius: 999px; background: var(--blue); color: var(--ink); }
+.tx mark { background: var(--blue); color: var(--ink); border-radius: 4px; padding: 0 3px; box-decoration-break: clone; -webkit-box-decoration-break: clone; }
+.dr-opt[aria-pressed="true"] { box-shadow: inset 0 0 0 1.5px var(--blue); }
+/* Decision Rooms toggle: no hover pill; an unpicked room's label just brightens on hover */
+.dr-block .dr-room:hover { background: none; }
+.dr-block .dr-room:not([aria-selected="true"]) b { color: #a3a39d; }
+.dr-block .dr-room:not([aria-selected="true"]):hover b { color: #fff; }
+
+/* More space between the home sections: 240px (160px on phones) */
+.hs { padding-top: 240px; }
+@media (max-width: 860px) { .hs { padding-top: 160px; } }
+
+/* FAQ: answers slide open and closed (height via grid rows, with a short fade) */
+.faq-a { display: grid; grid-template-rows: 0fr; opacity: 0; transition: grid-template-rows .35s cubic-bezier(.2, .7, .2, 1), opacity .25s ease; }
+.faq-a > div { overflow: hidden; min-height: 0; }
+.faq-item.is-open .faq-a { grid-template-rows: 1fr; opacity: 1; }
+@media (prefers-reduced-motion: reduce) { .faq-a { transition: none; } }
+
+/* ── Motion (ui/uiMotion.js): the same entrance for every UI window ── */
+@keyframes ui-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+@keyframes ui-pop { 0% { opacity: 0; transform: translateY(-14px) scale(.85); } 60% { opacity: 1; } 100% { opacity: 1; transform: none; } }
+.cn-main.in > * { animation: none; } /* replaced by the shared stagger */
+.dr-outs li { animation: ui-in .45s cubic-bezier(.2, .7, .2, 1) both; }
+.dr-outs li:nth-child(2) { animation-delay: .07s; } .dr-outs li:nth-child(3) { animation-delay: .14s; }
+/* Calendar: before the meeting plays, its results aren't there yet */
+.cal-win.is-pre .tx li, .cal-win.is-pre .steps li, .cal-win.is-pre .ev.new, .cal-win.is-pre .notes li.new { opacity: 0; }
+.tx mark { background: transparent; transition: background .45s ease; }
+.tx mark.lit { background: var(--blue); }
+@media (prefers-reduced-motion: reduce) { .dr-outs li { animation: none; } .cal-win.is-pre .tx li, .cal-win.is-pre .steps li, .cal-win.is-pre .ev.new, .cal-win.is-pre .notes li.new { opacity: 1; } }
+
+/* Decision Rooms: the rooms toggle sits below the three blocks */
+.dr-tabs { margin: 48px auto 0; }
+.dr-block .hs-head { margin-bottom: 72px; }
+@media (max-width: 860px) { .dr-tabs { margin-top: 24px; } .dr-block .hs-head { margin-bottom: 40px; } }
+
+/* Decision Rooms: the question, the three blocks and the rooms toggle together in one subtle box */
+.dr-stage { padding: 56px 48px 48px; border-radius: 28px; background: rgb(255 255 255 / .03); box-shadow: inset 0 0 0 1px rgb(255 255 255 / .07); }
+@media (max-width: 860px) { .dr-stage { padding: 24px 12px 16px; border-radius: 20px; } }
+
+/* The rooms toggle back outside the box, under it */
+.dr-tabs { margin-top: 40px; }
+@media (max-width: 860px) { .dr-tabs { margin-top: 20px; } }
+
+/* Decision Rooms, revised:
+   1 — "From [department tag]" over each department's points; tags as on the story chart */
+.dr-from { display: flex; align-items: center; gap: 8px; margin: 0 0 6px; font: 500 14px / 1.2 var(--font); color: #8a8a84; }
+.dtag { display: inline-flex; align-items: center; height: 24px; padding: 0 9px; border-radius: 6px; background: #fff; color: #12120f; font: 500 14px / 1 var(--font); letter-spacing: -0.01em; }
+.dtag[data-tone="red"] { background: #fe4050; }
+.dtag[data-tone="violet"] { background: #b769ff; }
+.dtag[data-tone="purple"] { background: #8891f3; }
+/* 2 — no box or heading: each option full width, labelled "Option n" above, an arrow on the right */
+.dr-opts { display: flex; flex-direction: column; gap: 16px; }
+.dr-opt-k { margin: 0 0 8px; font: 500 14px / 1.2 var(--font); color: #8a8a84; }
+.dr-block .dr-opt { display: flex; align-items: center; justify-content: space-between; gap: 16px; width: 100%; padding: 18px 20px; border-radius: 16px; background: rgb(255 255 255 / .06); transition: background .2s, box-shadow .2s; }
+.dr-block .dr-opt:hover { background: rgb(255 255 255 / .1); }
+.dr-block .dr-opt[aria-pressed="true"] { background: rgb(143 197 255 / .12); box-shadow: inset 0 0 0 1.5px #8fc5ff; }
+.dr-opt .arr { flex: none; font: 400 22px / 1 var(--font); color: #8a8a84; transition: transform .25s cubic-bezier(.2, .7, .2, 1), color .2s; }
+.dr-opt:hover .arr { transform: translateX(3px); color: #eaeae9; }
+.dr-opt[aria-pressed="true"] .arr { color: #8fc5ff; }
+/* 3 — outcomes, bigger and bolder: each on its own row with a large status mark */
+.dr-block .dr-outs { gap: 12px; }
+.dr-block .dr-outs li { align-items: center; gap: 16px; padding: 16px 18px; border-radius: 16px; background: rgb(255 255 255 / .05); }
+.dr-block .dr-outs .dot { width: 40px; height: 40px; font-size: 18px; }
+.dr-block .dr-outs small { font-size: 14px; margin-bottom: 2px; }
+.dr-block .dr-outs b { font: 500 24px / 1.1 var(--font); letter-spacing: -0.02em; }
+@media (max-width: 860px) { .dr-block .dr-outs b { font-size: 20px; } .dr-block .dr-outs .dot { width: 34px; height: 34px; } }
+.dr-block .dr-ins .dtag { color: #12120f; font: 500 14px / 1 var(--font); font-stretch: normal; }
+
+/* Module tags: the Figma SVGs, scaled up evenly to 22px tall */
+.mtag { display: block; height: 22px; width: auto; }
+/* Options sit centred in their column */
+.dr-flow { align-items: stretch; }
+.dr-opts { justify-content: center; }
+/* The arrow only shows on hover and on the picked option */
+.dr-opt .arr { opacity: 0; }
+.dr-opt:hover .arr, .dr-opt:focus-visible .arr, .dr-opt[aria-pressed="true"] .arr { opacity: 1; }
+.dr-opt .arr { transition: opacity .2s, transform .25s cubic-bezier(.2, .7, .2, 1), color .2s; }
+
+/* Decision Rooms column titles: larger, no number circles */
+.dr-block .dr-h { margin-bottom: 22px; font: 500 22px / 1.1 var(--font); letter-spacing: -0.02em; }
+@media (max-width: 860px) { .dr-block .dr-h { font-size: 20px; } }
+/* Scenarios: no outline on the picked one (its light tint stays); hovering one dims the others' text */
+.dr-block .dr-opt[aria-pressed="true"] { box-shadow: none; }
+.dr-opt-w .dr-opt-k, .dr-opt > span:first-child { transition: opacity .25s ease; }
+@media (hover: hover) {
+  .dr-opts:has(.dr-opt:hover) .dr-opt-w:not(:has(.dr-opt:hover)) :is(.dr-opt-k, .dr-opt > span:first-child) { opacity: .4; }
+}
+
+/* Smoother scenario states: slower, eased fades for the dimming, the tint and the arrow */
+.dr-opt-w .dr-opt-k, .dr-opt > span:first-child { transition: opacity .5s cubic-bezier(.25, .1, .25, 1); }
+.dr-block .dr-opt { transition: background-color .5s cubic-bezier(.25, .1, .25, 1); }
+.dr-opt .arr { transition: opacity .45s cubic-bezier(.25, .1, .25, 1), transform .5s cubic-bezier(.2, .7, .2, 1), color .45s ease; }
+.dr-block .dr-outs li { animation-duration: .6s; }
+@media (prefers-reduced-motion: reduce) { .dr-opt-w .dr-opt-k, .dr-opt > span:first-child, .dr-block .dr-opt, .dr-opt .arr { transition: none; } }
+/* The picked scenario: the site's light blue (#8FC5FF), with dark text and arrow */
+.dr-block .dr-opt[aria-pressed="true"], .dr-block .dr-opt[aria-pressed="true"]:hover { background: #8fc5ff; }
+.dr-block .dr-opt[aria-pressed="true"] b { color: #12120f; }
+.dr-block .dr-opt[aria-pressed="true"] small { color: #363633; }
+.dr-block .dr-opt[aria-pressed="true"] .arr { color: #12120f; }
+.dr-block .dr-opt b, .dr-block .dr-opt small { transition: color .5s cubic-bezier(.25, .1, .25, 1); }
+/* The "Scenario n" labels stay as they are while another scenario is hovered (only the buttons' text dims) */
+@media (hover: hover) { .dr-opts:has(.dr-opt:hover) .dr-opt-w .dr-opt-k { opacity: 1; } }
+
+/* Possible outcomes fill their column: three rows of equal height */
+.dr-col--outs { display: flex; flex-direction: column; }
+.dr-col--outs .dr-outs { flex: 1; display: flex; flex-direction: column; }
+.dr-col--outs .dr-outs li { flex: 1 1 0; }
+/* Scenario arrow: a chevron, larger */
+.dr-opt .arr { width: 26px; height: 26px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; font-size: 0; }
+/* More room between the departments' inputs */
+.dr-block .dr-ins { gap: 28px; }
+
+/* The question heads the middle column, over the scenarios; input and outcomes sit vertically centred
+   on either side */
+.dr-block .dr-flow { margin-top: 0; align-items: center; }
+.dr-block .dr-opts .dr-q { margin-bottom: 8px; text-align: left; }
+.dr-block .dr-opts .dr-q h3 { font-size: 28px; line-height: 1.1; text-wrap: balance; }
+.dr-col--outs .dr-outs li { flex: none; }
+@media (max-width: 860px) { .dr-block .dr-opts .dr-q h3 { font-size: 24px; } }
+
+/* The question keeps its earlier size and centring, now within the middle column */
+.dr-block .dr-opts .dr-q { text-align: center; }
+.dr-block .dr-opts .dr-q h3 { font-size: 34px; line-height: 1.05; }
+@media (max-width: 860px) { .dr-block .dr-opts .dr-q h3 { font-size: 26px; } }
+
+/* Question larger, with "Decision" above it at the same size */
+.dr-block .dr-opts .dr-q h3 { font-size: 42px; line-height: 1.02; letter-spacing: -0.035em; }
+.dr-q-k { display: block; color: #8a8a84; }
+@media (max-width: 860px) { .dr-block .dr-opts .dr-q h3 { font-size: 30px; } }
+/* "Scenario n" labels never dim on hover */
+.dr-opts .dr-opt-w .dr-opt-k { opacity: 1 !important; }
+/* FAQ: larger questions and answers */
+.faq-item button { font-size: 23px; padding-top: 24px; padding-bottom: 24px; }
+.faq-a p { font-size: 22px; line-height: 1.3; }
+.faq-item button i, .faq-item button i::before, .faq-item button i::after { width: 16px; }
+@media (max-width: 860px) { .faq-item button { font-size: 19px; padding-top: 20px; padding-bottom: 20px; } .faq-a p { font-size: 19px; } }
+/* FAQ: larger again; the answer sits closer under its question */
+.faq-item button { font-size: 27px; letter-spacing: -0.02em; }
+.faq-a p { font-size: 25px; line-height: 1.28; margin-top: -10px; padding-bottom: 26px; }
+@media (max-width: 860px) { .faq-item button { font-size: 21px; } .faq-a p { font-size: 20px; margin-top: -8px; } }
+/* (gap fix: no negative margin, which clipped the answer's first line; the open question's own bottom
+   padding shrinks instead) */
+.faq-a p { margin-top: 0; }
+.faq-item button { transition: padding-bottom .35s cubic-bezier(.2, .7, .2, 1); }
+.faq-item.is-open button { padding-bottom: 10px; }
+@media (max-width: 860px) { .faq-a p { margin-top: 0; } .faq-item.is-open button { padding-bottom: 8px; } }
+
+/* More room between the question and the scenarios */
+.dr-block .dr-opts .dr-q { margin-bottom: 32px; }
+@media (max-width: 860px) { .dr-block .dr-opts .dr-q { margin-bottom: 20px; } }
+/* FAQ topics: a smaller pill for the active one, a little more padding at the sides than top/bottom */
+.faq-cat { padding: 6px 14px; }
+.faq-cats { gap: 6px; }
+/* "Something else?" further down, with "Ask us directly" on its own line: same grey, underline set
+   further below the text, black on hover */
+.faq-more { margin-top: 40px; }
+.faq-more a { display: block; width: max-content; margin-top: 4px; color: var(--muted); text-decoration: underline; text-underline-offset: 5px; text-decoration-thickness: 1px; transition: color .2s; }
+.faq-more a:hover { color: var(--ink); }
+/* FAQ answers: a narrower measure, leaving more room on the right */
+.faq-a p { max-width: 40ch; }
+@media (max-width: 860px) { .faq-a p { max-width: none; padding-right: 40px; } }
+/* Scenarios: the picked one never dims while another is hovered */
+@media (hover: hover) { .dr-opts .dr-opt[aria-pressed="true"] > span:first-child { opacity: 1 !important; } }
+/* FAQ answers: a size down, more open line spacing */
+.faq-a p { font-size: 21px; line-height: 1.45; max-width: 44ch; }
+@media (max-width: 860px) { .faq-a p { font-size: 18px; line-height: 1.45; max-width: none; } }
+/* FAQ sizes: questions 23px, answers 21px */
+.faq-item button { font-size: 23px; }
+.faq-a p { font-size: 21px; }
+/* FAQ answers: a wider measure (still clear of the right edge) */
+.faq-a p { max-width: 56ch; }
+/* Scenario buttons: larger text, more padding */
+.dr-block .dr-opt { padding: 24px 26px; border-radius: 18px; }
+.dr-block .dr-opt b { font-size: 21px; margin-bottom: 4px; }
+.dr-block .dr-opt small { font-size: 19px; line-height: 1.3; }
+@media (max-width: 860px) { .dr-block .dr-opt { padding: 18px 20px; } .dr-block .dr-opt b { font-size: 19px; } .dr-block .dr-opt small { font-size: 17px; } }
+/* Decision Rooms: no box behind the whole room; the question and its scenarios get their own block,
+   like the departments and outcomes columns */
+.dr-stage { padding: 0; background: none; box-shadow: none; border-radius: 0; }
+.dr-block .dr-opts { padding: 32px 28px; border-radius: 16px; background: rgb(255 255 255 / .06); }
+.dr-block .dr-opt { background: rgb(255 255 255 / .06); }
+.dr-block .dr-opt:hover { background: rgb(255 255 255 / .1); }
+@media (max-width: 860px) { .dr-block .dr-opts { padding: 22px 16px; } }
+/* More room between the Decision Rooms header and the room's blocks */
+.dr-block .hs-head { margin-bottom: 112px; }
+@media (max-width: 860px) { .dr-block .hs-head { margin-bottom: 64px; } }
+.dr-block .hs-head { margin-bottom: 160px; }
+@media (max-width: 860px) { .dr-block .hs-head { margin-bottom: 88px; } }
+/* "Input from departments" and "Possible outcomes" sit above their boxes, not inside them */
+.dr-block .dr-col { padding: 0; background: none; }
+.dr-block .dr-col .dr-h { margin: 0 0 16px 4px; }
+.dr-block .dr-ins, .dr-block .dr-col--outs .dr-outs { padding: 24px; border-radius: 16px; background: rgb(255 255 255 / .06); }
+.dr-block .dr-col--outs .dr-outs { padding: 16px; }
+@media (max-width: 860px) { .dr-block .dr-ins { padding: 18px; } .dr-block .dr-col--outs .dr-outs { padding: 12px; } }
+/* Each department's input in its own box */
+.dr-block .dr-ins { padding: 0; background: none; gap: 10px; }
+.dr-block .dr-ins > li { padding: 18px 20px; border-radius: 16px; background: rgb(255 255 255 / .06); }
+@media (max-width: 860px) { .dr-block .dr-ins > li { padding: 16px; } }
+
+.dr-block .dr-opts { min-height: var(--opts-h, auto); box-sizing: border-box; }
+
+/* Outcome marks: smaller, outline only, + for a gain and − for a cost, symbol in the outline's colour */
+.dr-block .dr-outs .dot { width: 28px; height: 28px; background: none !important; box-shadow: inset 0 0 0 1.5px currentColor; font: 500 18px / 1 var(--font); }
+.dr-outs [data-c="g"] .dot { color: #5fd08a; }
+.dr-outs [data-c="o"] .dot { color: #f0a54a; }
+.dr-outs [data-c="r"] .dot { color: #ff6b6b; }
+@media (max-width: 860px) { .dr-block .dr-outs .dot { width: 26px; height: 26px; font-size: 16px; } }
+
+/* Decision Rooms wires (as on the story page): narrower input boxes, a gap for the lines, a dot on
+   each input and on the scenario block, a pulse running towards the scenarios */
+.dr-block .dr-flow { position: relative; grid-template-columns: minmax(0, .78fr) 72px minmax(0, 1fr) 16px minmax(0, 1fr); gap: 0; }
+.dr-block .dr-flow > .dr-col:first-of-type { grid-column: 1; }
+.dr-block .dr-flow > .dr-opts { grid-column: 3; }
+.dr-block .dr-flow > .dr-col--outs { grid-column: 5; }
+.dr-wires { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; z-index: 2; }
+.w-line { fill: none; stroke: rgb(234 234 233 / .35); stroke-width: 1; }
+.w-pulse { fill: none; stroke: #fff; stroke-width: 1.5; stroke-linecap: butt; opacity: .35; }
+.w-dot { fill: #12120f; stroke: #eaeae9; stroke-width: 3; }
+@media (max-width: 860px) {
+  .dr-block .dr-flow { grid-template-columns: minmax(0, 1fr); gap: 16px; }
+  .dr-block .dr-flow > * { grid-column: 1 !important; }
+  .dr-wires { display: none; }
+}
+/* More room above the Decision Rooms supertitle */
+.dr-block { padding-top: 176px; }
+@media (max-width: 1100px) { .dr-block { padding-top: 128px; } }
+@media (max-width: 860px) { .dr-block { padding-top: 88px; } }
+/* Connector dots: white inside, black outline */
+.w-dot { fill: #fff; stroke: #12120f; stroke-width: 2.5; }
+/* Connector dots: a small white centre in a thick ring the colour of the boxes (white 6% on the black ≈ #212120) */
+.w-dot { r: 5.5px; fill: #fff; stroke: #212120; stroke-width: 5; }
+/* Connector dots: the lines' colour, no ring, so each line runs straight into its dot */
+.w-dot { r: 4px; fill: #6d6d6a; stroke: none; }
+
+/* Connector: a thick ring the colour of the boxes under the line, and the line-coloured dot over it,
+   so the line runs through the ring straight into the dot */
+.w-ring { r: 8.5px; fill: #212120; }
+.w-dot { r: 3.5px; fill: #6d6d6a; stroke: none; }
+/* Brighter connector dots */
+.w-dot { fill: #d9d9d6; }
+/* Scenario blue: fades in/out fast at first, then settles slowly (ease-out) */
+.dr-block .dr-opt { transition: background-color .7s cubic-bezier(.16, 1, .3, 1); }
+.dr-block .dr-opt b, .dr-block .dr-opt small { transition: color .7s cubic-bezier(.16, 1, .3, 1); }
+.dr-opt .arr { transition: opacity .5s cubic-bezier(.16, 1, .3, 1), transform .5s cubic-bezier(.2, .7, .2, 1), color .7s cubic-bezier(.16, 1, .3, 1); }
+/* Scenario block centred in the room: equal columns either side, equal gaps */
+.dr-block .dr-flow { grid-template-columns: minmax(0, 1fr) 64px minmax(0, 1.15fr) 64px minmax(0, 1fr); }
+@media (max-width: 860px) { .dr-block .dr-flow { grid-template-columns: minmax(0, 1fr); gap: 16px; } }
+
+/* Ring colour per side: the boxes' grey, or the picked scenario's blue */
+.w-ring[data-ring="blue"] { fill: #8fc5ff; }
+/* Column titles centred above their boxes */
+.dr-block .dr-col .dr-h { margin-left: 0; text-align: center; }
+
+.dr-block .dr-col .dr-h { justify-content: center; }
+
+.dr-main.is-pre .dr-flow > :not(.dr-wires) { opacity: 0; }
+@media (prefers-reduced-motion: reduce) { .dr-main.is-pre .dr-flow > :not(.dr-wires) { opacity: 1; } }
+/* More room under the Decision Rooms toggle, before the black block ends */
+.dr-block { padding-bottom: 160px; }
+@media (max-width: 1100px) { .dr-block { padding-bottom: 112px; } }
+@media (max-width: 860px) { .dr-block { padding-bottom: 56px; } }
+
+/* The picked scenario has no arrow (also on hover/focus); the others show it on hover */
+.dr-opt[aria-pressed="true"] .arr, .dr-opt[aria-pressed="true"]:hover .arr, .dr-opt[aria-pressed="true"]:focus-visible .arr { opacity: 0; }
+
+/* Connected departments: two columns inside the window, the input on the left (who did it, what they logged)
+   and its reach on the right ("Reaches the people it affects", the cards stacked) */
+@media (min-width: 861px) {
+  .cn-win > .cn-main { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); grid-template-rows: auto 1fr; column-gap: 40px; align-items: start; }
+  .cn-main > .cn-who { grid-column: 1; grid-row: 1; align-self: end; }
+  .cn-main > .cn-src { grid-column: 1; grid-row: 2; max-width: none; }
+  .cn-main > .cn-reach { grid-column: 2; grid-row: 1; align-self: end; margin: 0 0 16px; }
+  .cn-main > .cn-to { grid-column: 2; grid-row: 2; grid-template-columns: minmax(0, 1fr); gap: 10px; }
+}
+
+/* Stories from clubs (index.html): the Journal's film cards (journal.css) in the section's width, and a link on */
+.hs-stories .jr-grid { margin: 0; padding: 0; list-style: none; }
+.st-more { margin: 56px 0 0; text-align: center; font: 500 17px / 1.2 var(--font); letter-spacing: -0.01em; }
+.st-more a { color: var(--ink); text-decoration: none; transition: opacity .2s; }
+.st-more a:hover { opacity: .5; }
+
+/* FAQ: hovering a question fades the others a little, like the top menu's links (the open answer stays as it is) */
+.faq-item button { transition: opacity .2s ease; }
+@media (hover: hover) and (min-width: 861px) {
+  .faq-list:has(.faq-item button:hover) .faq-item button:not(:hover) { opacity: .45; }
+}
+@media (prefers-reduced-motion: reduce) { .faq-item button { transition: none; } }
+/* Stories: one row of three films, kept as one row down to phones (where they stack) */
+.hs-stories .jr-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+@media (max-width: 560px) { .hs-stories .jr-grid { grid-template-columns: minmax(0, 1fr); } }

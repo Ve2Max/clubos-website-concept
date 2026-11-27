@@ -1,0 +1,58 @@
+/* ── Newsletter sign-up (shared: index.html, team.html, journal.html) ──
+   Centred Denim heading, an Aeonik line, a pill email field with a black Subscribe button.
+   Behaviour: src/ui/newsletter.js. */
+.tm-news { max-width: 720px; margin: 0 auto; padding: 240px 0 240px; text-align: center; }
+.tm-news-title { margin: 0; font: 500 clamp(36px, 4.6vw, 64px) / var(--lh-display) var(--font); letter-spacing: -0.035em; text-wrap: balance; }
+.tm-news-sub { margin: 24px auto 0; max-width: 40ch; font: 300 22px / 1.25 var(--font-light); font-stretch: condensed; letter-spacing: 0; color: #55554f; text-wrap: pretty; } /* Aeonik Condensed Light */
+.tm-news-form { position: relative; margin: 48px auto 0; max-width: 520px; display: flex; gap: 8px; padding: 6px; background: #eaeae9; border: 1px solid #f4f4f3; border-radius: 999px; box-shadow: 0 4px 12px rgba(0,0,0,.05); }
+.tm-news-label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.tm-news-input { flex: 1; min-width: 0; font: 500 17px / 1 var(--font); letter-spacing: -0.015em; color: var(--ink-1, #12120f); background: transparent; border: 0; padding: 14px 20px; border-radius: 999px; }
+.tm-news-input::placeholder { color: #8a8a84; }
+.tm-news-input:focus, .tm-news-input:focus-visible { outline: none; }
+.tm-news-btn { flex: none; font: 500 16px / 1 var(--font); letter-spacing: -0.01em; color: #eaeae9; background: #12120f; border: 0; border-radius: 999px; padding: 14px 24px; cursor: pointer; transition: opacity .2s; }
+.tm-news-btn:hover { opacity: .85; }
+.tm-news-msg { margin: 16px 0 0; min-height: 1.3em; font-size: 16px; line-height: 1.3; color: #6b6b66; }
+.tm-news-msg.is-error { color: #b91c1c; }
+@media (max-width: 860px) { .tm-news { padding: 144px 0; } .tm-news-sub { font-size: 20px; } }
+@media (max-width: 480px) { .tm-news-form { flex-direction: column; border-radius: 24px; } .tm-news-btn { padding: 16px; } }
+/* On the home page it sits straight in <body> (no padded <main>), so it brings its own side gutter */
+body > .tm-news { position: relative; box-sizing: content-box; padding-inline: 24px; }
+@media (max-width: 860px) { body > .tm-news { padding-inline: 16px; } }
+
+/* The same space above the newsletter as below it, on every page: below, the thank-you line (16px gap +
+   ~21px) and the footer's own top padding (96px; 64px on phones) already add space, so the bottom padding
+   is that much smaller than the top. Content before it brings no extra space of its own (journal sections). */
+.tm-news { padding-bottom: 107px; }
+@media (max-width: 860px) { .tm-news { padding-bottom: 43px; } }
+.jr-sec:has(+ .tm-news), .jr-sec:last-of-type { margin-bottom: 0; }
+
+/* More room around the newsletter: 320px above and below (200px on phones), still equal on both sides */
+.tm-news { padding-top: 320px; padding-bottom: 187px; }
+@media (max-width: 860px) { .tm-news { padding-top: 200px; padding-bottom: 99px; } }
+
+/* Home page: the sign-up inside a rounded photo block, the same width as the Decision Rooms block
+   (the page minus 16px either side, 32px corners). A dark wash keeps the light text readable. */
+.news-block { position: relative; margin: 240px 16px 0; border-radius: 32px; overflow: hidden; isolation: isolate;
+  background: #12120f; color: #fff; }
+/* The photo, taller than the block so it can drift up and down inside it as you scroll. A canvas
+   (drawn by src/hero.js, with the dark wash baked in) so the glass email field can refract it. */
+.news-bg { position: absolute; left: 0; top: -14%; display: block; width: 100%; height: 128%; z-index: -2; will-change: transform; }
+.news-block > .tm-news { position: relative; max-width: 720px; margin: 0 auto; padding: 300px 24px 276px; }
+.news-block .tm-news-title { color: #fff; }
+.news-block .tm-news-sub { color: rgb(255 255 255 / .82); }
+.news-block .tm-news-msg { color: rgb(255 255 255 / .8); }
+.news-block .tm-news-msg.is-error { color: #ffb4b4; }
+@media (max-width: 860px) {
+  .news-block { margin-top: 160px; border-radius: 24px; }
+  .news-block > .tm-news { padding: 180px 16px 156px; }
+}
+
+/* Home newsletter block: no hairline round the glass field (its 1px #f4f4f3 border showed as a white line
+   over the photo); the Subscribe button in the page's light blue (as the picked Decision Rooms scenario) */
+.news-block .tm-news-form { border-color: transparent; }
+.news-block .tm-news-btn { background: #8fc5ff; color: #12120f; }
+/* Home newsletter block: what you type in the field is white (over the dark photo), the caret too */
+.news-block .tm-news-input { color: #fff; caret-color: #fff; }
+/* The light blue Subscribe button: hovered, its fill eases to the brand's pale blue (no fade) */
+.news-block .tm-news-btn { transition: background-color .25s ease; }
+.news-block .tm-news-btn:hover, .news-block .tm-news-btn:focus-visible { background: #b6cee6; opacity: 1; }
